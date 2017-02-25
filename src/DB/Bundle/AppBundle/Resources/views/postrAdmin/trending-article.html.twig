@@ -1,0 +1,208 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block containerHeader %}
+	<h2>Trending Article</h2>
+{% endblock %}
+
+{% block pageAction %}
+	{#<a href="{{ path('db_postreach_new_post') }}" class="btn btn-primary"><i class="fa fa-bullhorn" aria-hidden="true"></i> New Post</a>#}
+{% endblock %}
+
+{% block pageInStyle %}
+	{#<link href="{{ asset('bundles/dbapp/postr/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">#}
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/datapicker/datepicker3.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/select2/select2.min.css') }}" rel="stylesheet">
+	<style>
+		.db-category span {
+			margin-right: 10px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		.db-category span i {
+			margin-left: 10px;
+			cursor: pointer;
+		}
+	</style>
+{% endblock %}
+
+{% block anguler %}ng-app="POLL" ng-controller="TrendingController"{% endblock %}
+
+{% block container %}
+<div class="ibox-content m-b-sm border-bottom">
+	<div class="row">
+		<div class="col-sm-2" style="display: none;">
+			<div class="form-group">
+				<label class="control-label" for="trendingArticleForm[parentCategoryId]">User Type</label>
+				<select id="trendingArticleForm_parentCategoryId" name="trendingArticleForm[parentCategoryId]" class="form-control" id="usertype" ng-model="parentCategoryId" ng-change="changeCategory()">
+    				<option value="">--None--</option>
+					{% if response.userTypeList is defined and response.userTypeList is not empty  %}
+						{% for category in response.userTypeList %}
+							<option value="{{ category.categoryId }}" {% if response.defaultUserType | default('0') == category.categoryId %} selected="selected"" {% endif %}>{{ category.category }}</option>
+						{% endfor %}
+					{% endif %}	
+    			</select>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label class="control-label" for="status">Category</label>
+				{% verbatim %}
+					<select class="form-control category-select" ng-model="categoryId" multiple="multiple">
+						<option value="">--None--</option>
+						<option ng-repeat="categoryDetail in categoryList" value="{{ categoryDetail.categoryId }}">{{ categoryDetail.category }}</option>
+					</select>
+				{% endverbatim %}
+			</div>
+		</div>
+		<div class="col-md-2">
+			<label class="control-label" for="approveStatus	">Approve Status</label>
+			<select class="form-control" ng-model="approveStatus">
+				<option value="">-- All --</option>
+				<option value="{{ constant('DB\\Bundle\\AppBundle\\Entity\\TrendingArticle::APPROVE_STATUS_APPROVE') }}">Approve</option>
+				<option value="{{ constant('DB\\Bundle\\AppBundle\\Entity\\TrendingArticle::APPROVE_STATUS_DISAPPROVE') }}">Not Approve</option>
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2">
+			<label class="control-label" for="status">Search By</label>
+			<select class="form-control" ng-model="type">
+				<option value="LU">By Last Update</option>
+				<option value="P">By Publish</option>
+			</select>
+		</div>
+		{% verbatim %}
+			<div class="col-md-2">
+				<label class="control-label" for="status">From Date</label>
+				<input type="text" class="form-control date-control" ng-model="fromDate" value="{{ Date.now() | date:'yyyy-MM-dd'}}"/>
+			</div>
+			<div class="col-md-2">
+				<label class="control-label" for="status">To Date</label>
+				<input type="text" class="form-control date-control" ng-model="toDate" date-format="yyyy-MM-dd"/>
+			</div>
+		{% endverbatim %}
+	</div>
+	<div class="row">
+		<div class="col-md-12"><hr/></div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<span class="input-group-btn">
+				<button type="button" class="btn btn-primary" ng-click="search()">Search!</button>
+			</span>
+			<span class="input-group-btn ng-cloak" ng-show="trendingCategoryList.length > 0">
+				<button type="button" class="btn btn-primary" ng-click="manageCategory()">Apply Category</button>
+			</span>
+		</div>
+	</div>
+</div>
+<div class="ibox">
+	<div class="ibox-content">
+		<div class="shared-posts">
+			<ul>
+				<li class="row ng-cloak" ng-show="articleList.length > 0">
+					<div class="col-md-1">
+						<input type="checkbox" class="all-category-check" ng-model="allCategory" ng-click="toggleSelection()"> 
+					</div>
+					<div class="col-md-10" ng-show="trendingCategoryList.length > 0">
+						<button class="btn btn-primary" ng-click="approveTrendingArtical(null, 'APPROVE')">Approve</button>
+						<button class="btn btn-warning" ng-click="approveTrendingArtical(null, 'DISAPPROVE')">Disapprove</button>
+						<button class="btn btn-danger" ng-click="deleteTrendingArtical(null)">Delete</button>
+					</div>
+				</li>
+				<li class="row ng-cloak" ng-show="!articleList.length && requestStatus == false">
+					<div class="alert alert-danger">
+						No Aticle found..
+					</div>
+				</li>
+				{% verbatim %}  
+					<li class="row ng-cloak" ng-repeat ="articleDetail in articleList" on-finish-render="ngRepeatFinished">
+						<div class="col-md-1">
+							<input type="checkbox" class="new-checkbox category-check" value="{{ articleDetail.trendingArticleId }}" ng-checked="allCategory" ng-click="toggleSelection(articleDetail.trendingArticleId)"> 
+						</div>
+						<div class="col-md-2">
+							<img ng-src="{{ articleDetail.image }}" class="img-responsive" />
+						</div>
+						<div class="col-md-6">
+							<dl>
+								<h3><i class="fa fa-certificate" ng-class="{'text-info': articleDetail.approveStatus == 1, 'text-warning':articleDetail.approveStatus == 0}"></i>
+									<a href="{{ articleDetail.url }}" target="_blank">{{ articleDetail.title }}</a>
+								</h3>
+								<a href="#">{{ articleDetail.url | domain }}</a>
+								<p>{{ articleDetail.description }}...</p>
+								<p>
+									<span>
+										<small>Publish At: <b>{{ articleDetail.publicationDateAt }}</b></small>&nbsp;&nbsp;
+										<small>Last Update At: <b>{{ articleDetail.lastUpdatedAt }}</b></small>
+									</span>
+								</p>
+								<!--root domain of article source -->
+								<p class="posted-actions db-category">
+									<span class="label label-info" ng-show="articleDetail.approveStatus == 1">Approved</span>
+									<span class="label label-warning"  ng-show="articleDetail.approveStatus == 0">Not Approved</span>
+									<span class="label label-primary" ng-repeat ="categoryDetail in articleDetail.categoryList">{{ categoryDetail.category }}<i class="glyphicon glyphicon-remove" ng-click="removeTrendingArticalCategory(categoryDetail.categoryId, articleDetail.trendingArticleId)"></i></span>
+								</p>
+								<hr/>
+								<div class="input-group">
+									<input id="{{ articleDetail.postId }}" class="form-control" type="text" value="{{ articleDetail.caption }}">
+									<span class="input-group-btn">
+										<div id="spinner-{{ articleDetail.postId }}" class="sk-spinner sk-spinner-rotating-plane" style="display: none;"></div>
+										<button id="caption-{{ articleDetail.postId }}" type="button" class="btn btn-primary" ng-click="updateCaption(articleDetail.trendingArticleId, articleDetail.postId)">Update Caption</button> 
+									</span>
+								</div>
+							</dl>
+						</div>
+						<div class="col-md-3">
+							<div class="reach col-xs-3">
+								<h3 class="mb0">{{ articleDetail.score }}</h3>
+								<small>Score</small>
+							</div>
+							
+							<div class="reach col-xs-7 pull-right">
+								<button ng-show="articleDetail.approveStatus == 0" class="btn btn-primary btn-block" ng-click="approveTrendingArtical(articleDetail)">Approve</button>
+								<button ng-show="articleDetail.approveStatus == 1" class="btn btn-warning btn-block" ng-click="approveTrendingArtical(articleDetail)">Disapprove</button>
+								<button class="btn btn-danger btn-block"  ng-click="deleteTrendingArtical(articleDetail.trendingArticleId)"> Delete </button>
+							</div>
+						</div>
+					</li>
+				{% endverbatim %}
+			</ul>
+		</div>
+		<div class="text-center" ng-show="articleList.length > 0 || requestStatus == true">
+			<div id="load-more-post-spinner" class="sk-spinner sk-spinner-rotating-plane"></div>
+			<button id="load-more-post" class="btn btn-primary" ng-click="getArticleList(pagination.NEXT_PAGE)">View Previous Post</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+	<script src="{{ asset('bundles/dbapp/postr/js/plugins/datapicker/bootstrap-datepicker.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular.min.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular-route.min.js') }}" type="text/javascript"></script>
+            
+	{#<script src="{{ asset('bundles/dbapp/postr/js/plugins/chosen/chosen.jquery.js') }}" type="text/javascript"></script>#}
+	<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+	<script src="{{ asset('bundles/dbapp/postr/js/plugins/select2/select2.full.min.js') }}"></script>
+	<script src="{{ asset('bundles/dbapp/app/js/BaseService.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+	<script src="{{ asset('bundles/dbapp/app/js/TrendingController.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+	<script type="text/javascript">
+        $(document).ready(function() {
+        	$('.date-control').datepicker({
+                todayBtn: "linked",
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true
+            });
+
+        	$(".category-select").select2();
+        });
+	</script>
+{% endblock %}

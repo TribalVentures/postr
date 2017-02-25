@@ -1,0 +1,227 @@
+{% extends 'DBAppBundle::step-Layout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/switchery/switchery.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block stepHeaderContainer %}
+	<h2>Payment options</h2>
+ 	<p><strong>Select your payment method and start posting</strong></p>
+{% endblock %}
+
+{% block container %}
+<div class="middle-box mt0 animated fadeIn">
+	<h3 class="font-bold text-center">Your Profile, Your Choice</h3>
+	<div class="error-desc">
+		<div class="text-center">You picked the categories, we pick the
+			best time for you to get the best exposure.</div>
+		<hr />
+		<div class="row text-center">
+			<div id="error-message" class="text-danger">{% if response.error is defined and response.error is not empty %}{{ response.error }}{% endif %}</div>
+			<br/>
+		</div>
+		<div class="row">
+			<div class="col-md-12 m-b">
+				<div class="panel-group payments-method" id="accordion">
+					{#<div class="panel panel-default">
+						<div class="panel-heading">
+							<div class="pull-right">
+								<i class="fa fa-cc-paypal text-success"></i>
+							</div>
+							<h5 class="panel-title">
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">PayPal</a>
+							</h5>
+						</div>
+						<div id="collapseOne" class="panel-collapse collapse in">
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-md-10">
+										<h2>Charge</h2>
+										<h3 class="text-navy">$20.00/mo</h3>
+										<p class="m-t">
+											Get your social media marketing for less
+											than your weekly coffee cost.
+										</p>
+										<button class="btn btn-success">
+											<i class="fa fa-paypal"> </i> Subscribe via PayPal
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>#}
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<div class="pull-right">
+								<i class="fa fa-cc-visa text-success"></i>
+								<i class="fa fa-cc-amex text-primary"></i>
+								<i class="fa fa-cc-mastercard text-warning"></i>
+								<i class="fa fa-cc-discover text-danger"></i>
+							</div>
+							<h5 class="panel-title"><a>Credit Card</a>
+								{#<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Credit Card</a>#}
+							</h5>
+						</div>
+						<div id="collapseTwo" class="panel-collapse collapse in">
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-md-4">
+										<h2>Charge</h2>
+										<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
+										{% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
+											<p class="m-t">{{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('0') }} Free trial.</p>
+										{% endif %}
+										<p class="m-t">Get your social media marketing for less than your weekly coffee cost.</p>
+									</div>
+									<div class="col-md-8">
+										<form id="checkout-form" action="{{ path('db_postreach_register_select_payment_method') }}" method="post">
+											<div class="row">
+												<div class="col-xs-12">
+													<div class="form-group">
+														<label for="card-number">CARD NUMBER</label>
+														<div class="input-group">
+															<div id="card-number" class="form-control hosted-field"></div>
+															<span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-7 col-md-7">
+													<div class="form-group">
+														<label for="expiration-date">EXPIRATION DATE</label>
+														<div class="form-control hosted-field" id="expiration-date"></div>
+													</div>
+												</div>
+												
+
+												<div class="col-xs-5 col-md-5 pull-right">
+													<div class="form-group">
+														<label for="cvv">CV CODE</label>
+														<div class="form-control hosted-field" id="cvv"></div>
+													</div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<input class="btn btn-success" type="submit" disabled="disabled" value="Subscribe"></button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<form id="paymentMethodForm" action="{{ path('db_postreach_register_select_payment_method') }}" method="post">
+		<input id="paymentMethodNonce" type="hidden" name="paymentMethodForm[paymentMethodNonce]" value="">
+		{#<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="continue-action">
+				<button i type="submit" class="btn btn-primary btn-lg btn-block" disabled="disabled">Confirm</a>
+			</div>
+		</div>#}
+	</form>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<!-- Load the Client component. -->
+<script src="https://js.braintreegateway.com/web/3.6.2/js/client.min.js"></script>
+
+<!-- Load the Hosted Fields component. -->
+<script src="https://js.braintreegateway.com/web/3.6.2/js/hosted-fields.min.js"></script>
+
+<!-- iCheck -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+<script>
+	$(document).ready(function(){
+		$('.i-checks').iCheck({
+        	checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+		});
+    });
+</script>
+
+<script>
+	var authorization = '{{ response.clientToken }}';
+	var form = document.querySelector('#checkout-form');
+	var submit = document.querySelector('input[type="submit"][value="Subscribe"]');
+	
+	braintree.client.create({
+	  		authorization: authorization
+		}, function(err, clientInstance) {
+	  		if (err) {
+	    		console.error(err);
+	    		return;
+	  		}
+	  	createHostedFields(clientInstance);
+	});
+
+	function createHostedFields(clientInstance) {
+		braintree.hostedFields.create({
+	    	client: clientInstance,
+	    	styles: {
+		      	'input': {
+		        	'color': '#ccc'
+		      	},
+		      	':focus': {
+		        	'color': 'black'
+		      	},
+		      	'.valid': {
+		        	'color': 'inherit'
+		      	}
+	    	},
+	    	fields: {
+		      	number: {
+		        	selector: '#card-number',
+		        	placeholder: '4111 1111 1111 1111'
+		      	},
+		      	cvv: {
+		        	selector: '#cvv',
+		        	placeholder: '123'
+		      	},
+
+	      		expirationDate: {
+	        		selector: '#expiration-date',
+	        		placeholder: 'MM/YYYY'
+	      		}
+	    	}
+	  	}, function (hostedFieldsErr, hostedFieldsInstance) {
+		  	if (hostedFieldsErr) {
+	        	return;
+	      	}
+
+		  	submit.removeAttribute('disabled');
+
+	      	form.addEventListener('submit', function (event) {
+	        	event.preventDefault();
+
+	        	hostedFieldsInstance.tokenize(function (tokenizeErr, payload) {
+	          		if (tokenizeErr) {
+	            		// Handle error in Hosted Fields tokenization
+	            		document.querySelector('div#error-message').innerText = tokenizeErr.message;
+	            		return;
+	          		}
+	          		//document.querySelector('button[type="submit"]').removeAttribute('disabled');
+	          		document.querySelector('input#paymentMethodNonce').value = payload.nonce;
+	          		document.querySelector('form#paymentMethodForm').submit();
+	        	});
+	      	}, false);
+	    });
+	}
+</script>
+{% endblock %}

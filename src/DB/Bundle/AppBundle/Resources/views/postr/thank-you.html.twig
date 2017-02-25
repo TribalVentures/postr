@@ -1,0 +1,49 @@
+{% extends 'DBAppBundle::step-Layout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block stepHeaderContainer %}
+	<h2>Registration Complete</h2>
+	<p>
+		<strong>Your registration is completed</strong>
+	</p>
+{% endblock %}
+
+{% block container %}
+<div class="wrapper wrapper-content">
+	<div class="middle-box mt0 animated fadeIn">
+		<h3 class="font-bold text-center">Thank you</h3>
+		<div class="error-desc">
+			<hr />
+		</div>
+	</div>
+	<div class="row">
+		<div
+			class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="continue-action">
+				<a href="{{ path('db_postreach_dashboard') }}" class="btn btn-primary btn-lg btn-block">Continue Posting...</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+	<!-- iCheck -->
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'DBAppBundle::step-Layout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/switchery/switchery.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block stepHeaderContainer %}
+	<h2>Connect Your Social Profiles</h2>
+	<p><strong>Select the social network you want to connect to</strong></p>
+{% endblock %}
+
+{% block container %}
+{% if response.error is defined and response.error is not empty %}
+	<div class="alert alert-danger alert-dismissable">
+		<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+		{{ response.error }}
+	</div>
+{% endif %}
+<form name="socialProfileForm" action="{{ path('db_postreach_register_select_platform') }}" method="post">
+	<div class="middle-box mt0 h-300 text-center animated fadeInRightBig">
+		<h3 class="font-bold">Your Profile, Your Choice</h3>
+		<div class="error-desc">
+			<div class="row">
+				{% if (response.pageList is defined and response.pageList is not empty) or (response.twPageList is defined and response.twPageList is not empty) %}
+					You picked the categories, we pick the best time for you to get the best exposure.
+					<hr>
+				{% else %}
+					Choose the social network you want to promote on <br>
+				{% endif %}
+				
+				{% if response.pageList is defined and response.pageList is not empty %}
+					<div class="col-md-6 m-b">
+						<a class="btn btn-success btn-facebook m-t disabled"> <i
+							class="fa fa-facebook"> </i> Connect with Facebook
+						</a>
+						{% if response.pageList is defined and response.pageList is not empty %}
+							<div class="form-group text-center"><br>
+								<label class="control-label">Post as</label> 
+								<select name="socialProfileForm[facebook]" class="form-control m-b">
+									<option value="">-- None --</option>
+									{% for pageDetail in response.pageList %}
+										<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<a href="{{ path('db_postreach_register_select_platform', {'disconnect':'fbdisconnect'}) }}">Disconnect</a>
+						{% endif %}
+					</div>
+				{% else %}
+					<div class="col-md-6 m-b">
+						<a href="{{ response.facebookURL | default('javascript:void(0);') }}" class="btn btn-success btn-facebook m-t">
+							<i class="fa fa-facebook"></i> Connect with Facebook
+						</a>
+					</div>
+				{% endif %}
+				
+				{% if response.twPageList is defined and response.twPageList is not empty %}
+					<div class="col-md-6 m-b">
+						<a class="btn btn-info btn-twitter  m-t disabled"> <i
+							class="fa fa-twitter"> </i> Connect with Twitter
+						</a>
+						<div class="form-group text-center"><br>
+							<label class="control-label">Post as</label>
+							<select name="socialProfileForm[twitter]" class="form-control m-b">
+								<option value="">-- None --</option>
+								{% for pageDetail in response.twPageList %}
+									<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<a href="{{ path('db_postreach_register_select_platform', {'disconnect':'twdisconnect'}) }}">Disconnect</a>
+					</div>
+				{% else %}
+					<div class="col-md-6">
+						<a class="btn btn-info btn-twitter  m-t"
+							href="{{ path('db_postreach_twitter_connect', {'q':'register'}) }}"> <i class="fa fa-twitter">
+						</i> Connect with Twitter
+						</a>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div
+			class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="continue-action">
+				<button type="submit" class="btn btn-primary btn-lg btn-block">Continue</button>
+			</div>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+	<!-- iCheck -->
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Setting</h2>
+	<p>Choose your setting here</p>
+{% endblock %}
+
+{% block pageAction %}
+{% endblock %}
+
+{% block container %}
+<div class="tabs-container">
+	{% if response.error is defined and response.error is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-danger">{{ response.error }}</div>
+		</div>
+	{% endif %}
+	{% if response.message is defined and response.message is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-success">{{ response.message }}</div>
+		</div>
+	{% endif %}
+	<div class="tabs">
+		<ul class="nav nav-tabs">
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_admin_setting'%} class="active" {% endif %}><a href="{{ path('db_postreach_admin_setting') }}">Notification Setting</a></li>
+		</ul>
+		<div class="tab-content ">
+			<div id="tab-5" class="tab-pane active">
+				<div class="panel-body">
+					<h3 class="font-bold text-center">Notification Emails</h3>
+					<div class="error-desc">
+						<div class="text-center">
+							Select your notification emails, Put comma separated emails for notification
+						</div>
+						<hr />
+						<div class="row">
+							<form id="settingForm" name=settingForm action="{{ path('db_postreach_admin_setting') }}" method="post">
+								<div class="col-md-10 col-md-offset-1">
+									{% if response.settingMap is defined and response.settingMap is not empty%}
+										{% if response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL')] is defined and response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL')] is not empty%}
+											<div class="row">
+												<div class="form-group">
+													<label class="col-sm-2 control-label">Notification Emails</label>
+													<div class="col-sm-10">
+														<textarea name="settingForm[{{ constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL') }}]" style="width: 100%;">{{ response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL')].settingValue }}</textarea>
+														<span class="help-block m-b-none">You can enter multiple email by comma separated. e.g josh@postr.com, martina@postr.com</span>
+													</div>
+												</div>
+											</div>
+											<div class="hr-line-dashed"></div>
+										{% endif %}
+										<div class="row">
+											<div class="form-group">
+												<label class="col-sm-2 control-label">Notification<br>
+												<small class="text-navy">Enable/Desable setting</small></label>
+												<div class="col-sm-10">
+													{% if response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_NOTIFICATION')] is defined and response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_NOTIFICATION')] is not empty%}
+														{% set setting = response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_NOTIFICATION')] %}
+														<div>
+															<label>
+																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable new signup notification
+															</label>
+														</div>
+													{% endif %}
+													{% if response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_COMPLETE_NOTIFICATION')] is defined and response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_COMPLETE_NOTIFICATION')] is not empty%}
+														{% set setting = response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_SIGNUP_COMPLETE_NOTIFICATION')] %}
+														<div>
+															<label>
+																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable new signup complete notification
+															</label>
+														</div>
+													{% endif %}
+													{% if response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_ACCOUNT_CANCEL')] is defined and response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_ACCOUNT_CANCEL')] is not empty%}
+														{% set setting = response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_ACCOUNT_CANCEL')] %}
+														<div>
+															<label>
+																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable calcel account notification
+															</label>
+														</div>
+													{% endif %}
+													{% if response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_ENABLE_NOTIFICATION')] is defined and response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_ENABLE_NOTIFICATION')] is not empty%}
+														{% set setting = response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_ENABLE_NOTIFICATION')] %}
+														<div>
+															<label>
+																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable/desable all email notification
+															</label>
+														</div>
+													{% endif %}
+												</div>
+											</div>
+										</div>
+										<div class="hr-line-dashed"></div>
+										<div class="row">
+											<div class="form-group">
+												<label class="col-sm-2 control-label">&nbsp;</label>
+												<div class="col-sm-10">
+													<button type="button" class="btn btn-primary save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+												</div>
+											</div>
+										</div>
+									{% endif %}
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    	$('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    	$('.save').on('click', function() {
+           $('#settingForm').submit();
+        });
+        
+        setTimeout(function(){ $('.alert-message').hide(); }, 3000);
+    });
+</script> 
+{% endblock %}

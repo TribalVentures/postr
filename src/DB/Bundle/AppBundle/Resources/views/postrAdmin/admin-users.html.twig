@@ -1,0 +1,120 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block containerHeader %}
+	<h2>Users</h2>
+{% endblock %}
+
+{% block pageAction %}
+	<a class="btn btn-primary" href="{{ path('db_postreach_admin_add_admin_user') }}">
+		<i class="fa fa-user" aria-hidden="true"></i>
+		New User
+	</a>
+{% endblock %}
+
+{% block container %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="ibox">
+			<div class="ibox-title">
+				<form id="adminUserForm" name="adminUserForm" action="{{ path('db_postreach_admin_users') }}" method="post">
+					<input type="hidden" id="adminUserForm_currentPage" name="adminUserForm[currentPage]" value="{{ response.adminUserForm.currentPage | default('1') }}" />
+					<div class="input-group col-md-6">
+						<input id="adminUserForm_search" name="adminUserForm[search]" class="form-control" type="text" value="{{ response.adminUserForm.search | default('') }}"> 
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-primary" id="adminUserForm-search-btn" >Search!</button>
+						</span>
+					</div>
+				</form>
+				<div class="ibox-tools">
+				</div>
+			</div>
+			<div class="ibox-content table-responsive" style="min-height: 200px;">
+				<table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+					<thead>
+						<tr>
+							<th>#ID</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th style="text-align: right;">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if response.adminUserList.LIST is defined and response.adminUserList.LIST is not empty  %}
+							{% for adminUser in response.adminUserList.LIST %}
+								<tr>
+									<td>#{{ adminUser.adminUserId  }}</td>
+									<td>{{ adminUser.name }}</td>	
+									<td>{{ adminUser.email }}</td>								
+									<td style="text-align: right;">
+										<a href="{{ path('db_postreach_admin_edit_admin_user', {'adminUserId': adminUser.adminUserId}) }}" class="btn btn-sm btn-primary">Edit</a>
+										<a href="{{ path('db_postreach_admin_delete_admin_user', {'adminUserId': adminUser.adminUserId}) }}" class="btn btn-sm btn-danger">Delete</a>
+									</td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+					</tbody>
+				</table>
+				{% if response.adminUserList.PAGING is defined and response.adminUserList.PAGING is not empty  %}
+					<div align="center">
+						<ul class="pagination">
+							{% if response.adminUserList.PAGING.PREV_PAGE is defined and response.adminUserList.PAGING.PREV_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.adminUserList.PAGING.PREV_PAGE }}');">Previous</a>
+								</li>
+							{% else %}
+								<li class="paginate_button previous disabled">
+									<a href="#">Previous</a>
+								</li>
+							{% endif %}
+							
+							{% if response.adminUserList.PAGING.PAGE_NUMBERS is defined and response.adminUserList.PAGING.PAGE_NUMBERS is not empty  %}
+								{% for page in response.adminUserList.PAGING.PAGE_NUMBERS %}
+									{% if page == response.adminUserList.PAGING.CURRENT_PAGE %}
+										<li class="paginate_button active">
+											<a href="javascript: void(0);">{{ page }}</a>
+										</li>
+									{% else %}
+										<li class="paginate_button">
+											<a href="javascript: submitPage('{{ page }}');">{{ page }}</a>
+										</li>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+							
+							{% if response.adminUserList.PAGING.NEXT_PAGE is defined and response.adminUserList.PAGING.NEXT_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.adminUserList.PAGING.NEXT_PAGE }}');">Next</a>
+								</li>
+							{% else %}
+								<li class="paginate_button next disabled">
+									<a href="#">Next</a>
+								</li>
+							{% endif %}
+						</ul>
+					</div>
+				{% endif %}
+			</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script>
+	$(document).ready(function(){
+		$('#adminUserForm-search-btn').on('click', function() {
+			submitPage(1);
+		});
+    });
+	function submitPage(currentPage = -1) {
+		if(currentPage > 0) {
+			$('#adminUserForm_currentPage').val(currentPage);
+		}
+		
+		$('#adminUserForm').submit();
+	}
+</script>
+{% endblock %}

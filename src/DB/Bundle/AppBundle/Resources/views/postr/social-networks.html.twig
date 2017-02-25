@@ -1,0 +1,279 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/switchery/switchery.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Post Preferences</h2>
+	<p>Choose how and when the posts are shared</p>
+{% endblock %}
+
+{% block pageAction %}
+	<button type="button" class="btn btn-primary save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+{% endblock %}
+
+{% block container %}
+<div class="tabs-container">
+	{% if response.error is defined and response.error is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-danger">{{ response.error }}</div>
+		</div>
+	{% endif %}
+	{% if response.message is defined and response.message is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-success">{{ response.message }}</div>
+		</div>
+	{% endif %}
+	<div class="tabs">
+		<ul class="nav nav-tabs">
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_category'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_category') }}">Categories</a></li>
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_frequency_settings'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_frequency_settings') }}">Frequency &amp; Settings</a></li>
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_social_networks'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_social_networks') }}">Social Networks</a></li>
+		</ul>
+		<div class="tab-content ">
+			<form id="socialProfileForm" name="socialProfileForm" action="{{ path('db_postreach_post_preference_social_networks') }}" method="post">
+				<div id="tab-7" class="tab-pane active">
+					<div class="panel-body text-center">
+						<h3 class="font-bold">Your Profile, Your Choice</h3>
+						<div class="error-desc">
+							You picked the categories, we pick the best time for you to get
+							the best exposure.
+							<hr />
+							
+							<div class="row">
+								<div class="col-md-3 col-md-offset-2 m-b">
+									{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty %}
+											<a class="btn btn-success btn-facebook m-t disabled">
+												<i class="fa fa-facebook"></i> Connect with Facebook
+											</a>
+											<div class="form-group text-center"><br>
+												<label class="control-label">Post as</label>
+												<select name="socialProfileForm[oldFacebook]" class="form-control m-b">
+													<option value="{{ response.fbSocialProfileDetail.socialId }}">{{ response.fbSocialProfileDetail.name }}</option>
+												</select>
+											</div>
+											{#<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'fbdisconnect'}) }}">Disconnect</a>#}
+											{% if response.pageList is not defined or response.pageList is empty %}
+												<a href="{{ response.facebookURL | default('') }}">Change</a> |
+											{% endif %}
+											<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'fbdisconnectsocial'}) }}">Disconnect</a>
+									{% else %}
+										<a class="btn btn-success btn-facebook m-t" href="{{ response.facebookURL | default('') }}">
+											<i class="fa fa-facebook"></i> Connect with Facebook
+										</a>
+									{% endif %}
+								</div>
+								
+								<div class="col-md-3 col-md-offset-2 m-b">
+									{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty %}
+										<a class="btn btn-info btn-twitter m-t disabled"> <i class="fa fa-twitter">
+											</i> Connect with Twitter
+										</a>
+										<div class="form-group text-center"><br>
+											<label class="control-label">Post as</label>
+											<select name="socialProfileForm[oldTwitter]" class="form-control m-b">
+												<option value="{{ response.twSocialProfileDetail.socialId }}">{{ response.twSocialProfileDetail.name }}</option>
+											</select>
+										</div>
+										{#<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'twdisconnect'}) }}">Disconnect</a>#}
+										{% if response.twPageList is not defined or response.twPageList is empty %}
+											<a href="{{ path('db_postreach_twitter_connect', {'q':'preferences'}) }}">Change</a> |
+										{% endif %}
+										<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'twdisconnectsocial'}) }}">Disconnect</a>
+									{% else %}
+										<a class="btn btn-info btn-twitter m-t" href="{{ path('db_postreach_twitter_connect', {'q':'preferences'}) }}">
+											<i class="fa fa-twitter"></i> Connect with Twitter
+										</a>
+									{% endif %}
+								</div>
+							</div>
+							<hr />
+							{% if (response.pageList is defined and response.pageList is not empty) or response.twPageList is defined and response.twPageList is not empty %}
+								<div class="row">
+									<div class="col-md-8 col-md-offset-2 m-b">
+										<div class="error-desc">
+											<div class="text-center alert alert-info">
+												Please select social profile and click on save button to reflect the changes. Click on cancel to keep your previous setting
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endif %}
+							<div class="row">
+								{% if response.pageList is defined and response.pageList is not empty %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										<a class="btn btn-success btn-facebook m-t disabled"> <i
+											class="fa fa-facebook"> </i> Connect with Facebook
+										</a>
+										{% if response.pageList is defined and response.pageList is not empty %}
+											<div class="form-group text-center"><br>
+												<label class="control-label">Post as</label> 
+												<select name="socialProfileForm[facebook]" class="form-control m-b">
+													<option value="">-- None --</option>
+													{% for pageDetail in response.pageList %}
+														<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+													{% endfor %}
+												</select>
+											</div>
+											<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'fbcalcel'}) }}">Cancel</a>
+										{% endif %}
+									</div>
+								{% else %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+									</div>
+								{% endif %}
+								
+								{% if response.twPageList is defined and response.twPageList is not empty %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										<a class="btn btn-info btn-twitter  m-t disabled"> <i
+											class="fa fa-twitter"> </i> Connect with Twitter
+										</a>
+										<div class="form-group text-center"><br>
+											<label class="control-label">Post as</label>
+											<select name="socialProfileForm[twitter]" class="form-control m-b">
+												<option value="">-- None --</option>
+												{% for pageDetail in response.twPageList %}
+													<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'twcancel'}) }}">Cancel</a>
+									</div>
+								{% endif %}
+							</div>
+							{#<div class="row">
+								{% if response.pageList is defined and response.pageList is not empty %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										<a class="btn btn-success btn-facebook m-t disabled"> <i
+											class="fa fa-facebook"> </i> Connect with Facebook
+										</a>
+										{% if response.pageList is defined and response.pageList is not empty %}
+											<div class="form-group text-center"><br>
+												<label class="control-label">Post as</label> 
+												<select name="socialProfileForm[facebook]" class="form-control m-b">
+													<option value="">-- None --</option>
+													{% for pageDetail in response.pageList %}
+														<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+													{% endfor %}
+												</select>
+											</div>
+											<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'fbcalcel'}) }}">Calcel</a>
+										{% endif %}
+									</div>
+								{% else %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty %}
+											<a class="btn btn-success btn-facebook m-t disabled">
+												<i class="fa fa-facebook"></i> Connect with Facebook
+											</a>
+											<div class="form-group text-center"><br>
+												<label class="control-label">Post as</label>
+												<select name="socialProfileForm[twitter]" class="form-control m-b">
+													<option value="{{ response.fbSocialProfileDetail.socialId }}">{{ response.fbSocialProfileDetail.name }}</option>
+												</select>
+											</div>
+											<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'fbdisconnect'}) }}">Disconnect</a>
+										{% else %}
+											<a class="btn btn-success btn-facebook m-t" href="{{ response.facebookURL | default('') }}">
+												<i class="fa fa-facebook"></i> Connect with Facebook
+											</a>
+										{% endif %}
+									</div>
+								{% endif %}
+								
+								{% if response.twPageList is defined and response.twPageList is not empty %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										<a class="btn btn-info btn-twitter  m-t disabled"> <i
+											class="fa fa-twitter"> </i> Connect with Twitter
+										</a>
+										<div class="form-group text-center"><br>
+											<label class="control-label">Post as</label>
+											<select name="socialProfileForm[twitter]" class="form-control m-b">
+												<option value="">-- None --</option>
+												{% for pageDetail in response.twPageList %}
+													<option value="{{ pageDetail.socialId }}">{{ pageDetail.name }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'twcancel'}) }}">Calcel</a>
+									</div>
+								{% else %}
+									<div class="col-md-3 col-md-offset-2 m-b">
+										{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty %}
+											<a class="btn btn-info btn-twitter m-t disabled"> <i class="fa fa-twitter">
+												</i> Connect with Twitter
+											</a>
+											<div class="form-group text-center"><br>
+												<label class="control-label">Post as</label>
+												<select name="socialProfileForm[twitter]" class="form-control m-b">
+													<option value="{{ response.twSocialProfileDetail.socialId }}">{{ response.twSocialProfileDetail.name }}</option>
+												</select>
+											</div>
+											<a href="{{ path('db_postreach_post_preference_social_networks', {'disconnect':'twdisconnect'}) }}">Disconnect</a>
+										{% else %}
+											<a class="btn btn-info btn-twitter m-t" href="{{ path('db_postreach_twitter_connect', {'q':'preferences'}) }}">
+												<i class="fa fa-twitter"></i> Connect with Twitter
+											</a>
+										{% endif %}
+									</div>
+								{% endif %}
+							</div>#}
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<!-- Jasny -->
+<script src=""></script>
+
+<!-- Switchery -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/switchery/switchery.js') }}"></script>
+<!-- Fancy Checkbox -->
+<!-- Chosen -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/chosen/chosen.jquery.js') }}"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+        
+        var elem = document.querySelector('.js-switch');
+        var switchery = new Switchery(elem, { color: '#1AB394' });
+
+        var elem_2 = document.querySelector('.js-switch_2');
+        var switchery_2 = new Switchery(elem_2, { color: '#ED5565' });
+
+        var elem_3 = document.querySelector('.js-switch_3');
+        var switchery_3 = new Switchery(elem_3, { color: '#1AB394' });
+        
+        $('.chosen-select').chosen({width: "100%"});
+
+        $(".click-manual").click(function(){
+            $("#post-frequency").addClass("hidden");
+        });                        
+        $(".click-autopilot").click(function(){
+            $("#post-frequency").removeClass("hidden");
+        });
+
+        $('button.save[type="button"]').on('click', function() {
+			$('#socialProfileForm').submit();
+        });
+
+        setTimeout(function(){ $('.alert-message').hide(); }, 3000);
+    });
+</script> 
+{% endblock %}

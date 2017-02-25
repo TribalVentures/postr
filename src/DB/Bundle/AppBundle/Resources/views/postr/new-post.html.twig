@@ -1,0 +1,178 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
+	<style>
+		.db-category span {
+			margin-right: 10px;
+		}
+		.db-category span i {
+			margin-left: 10px;
+			cursor: pointer;
+		}
+	</style>
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Create a new post</h2>
+	<p>Choose from our recommended articles to post on your social media profiles</p>
+{% endblock %}
+
+{% block pageAction %}{% endblock %}
+
+{% block anguler %}ng-app="POLL" ng-controller="PostController"{% endblock %}
+
+{% block container %}
+<div class="ibox">
+	<div class="ibox-title">
+    	<h5>Recommended Articles</h5>                        
+	</div>
+	<div class="ibox-content">
+		<div class="recommended-posts">                            
+			<ul>
+				{% if (response.fbSocialProfileDetail is not defined or response.fbSocialProfileDetail is empty) and (response.twSocialProfileDetail is not defined or response.twSocialProfileDetail is empty) %}
+					<li class="row">
+						<div class="alert alert-danger" ng-init="isValid= false">
+							Currently you don't have setup any social profile selected, Please <a class="alert-link" href="{{ path('db_postreach_post_preference_social_networks') }}">click here</a> to setup your social profile.
+						</div>
+					</li>
+				{% else %}
+					<li class="row ng-cloak">
+						<div class="alert alert-danger"  ng-show="!articleList.length && requestStatus == false">
+							We are currently scouring the web for exciting new articles to post on your behalf.
+							Please <a class="alert-link" ng-click="getArticleList(1)">check back soon</a>.
+						</div>
+					</li>
+					{% verbatim %}     
+						<li id="row-{{ articleDetail.trendingArticleId }}" class="row ng-cloak" ng-repeat="articleDetail in articleList">
+							<div class="col-md-2">
+								<img ng-src="{{ articleDetail.image }}" on-error-src="http://image.shutterstock.com/z/stock-photo-colorful-pillows-on-sofa-close-up-338528252.jpg" class="img-responsive" />
+							</div>
+							<div class="col-md-6">
+								<dl>
+									<h3>{{ articleDetail.title }}</h3>
+									<p>{{ articleDetail.url | domain }}</p>
+									<p>{{ articleDetail.description }}
+									</p>
+									<p class="db-category">
+										<span class="label label-border" ng-repeat="categoryDetail in articleDetail.categoryList">{{ categoryDetail.category }}</span>
+									</p>
+									<!--root domain of article source -->
+									<p class="posted-actions">
+										<a class="btn btn-sm btn-primary" target="_" href="{{ articleDetail.url }}"><i class="fa fa-external-link" aria-hidden="true"></i> View Article </a> 
+										<button type="button" class="btn btn-sm btn-warning" ng-click="hideArticle(articleDetail)">
+											<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Hide Article
+										</button>
+									</p>
+								</dl>
+							</div>
+							<div class="col-md-4 text-right">
+								{% endverbatim %}
+									{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty and response.fbSocialProfileDetail.name is not empty %}
+										<button type="button" class="btn btn-success" ng-click="showArticleModal(articleDetail, 'fb')">
+											<i class="fa fa-facebook"> </i> Post Facebook 
+										</button>
+									{% endif %}
+									
+									{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty and response.twSocialProfileDetail.name is not empty %}
+										<button type="button" class="btn btn-info" ng-click="showArticleModal(articleDetail, 'tw')">
+											<i class="fa fa-twitter"> </i> Post Twitter 
+										</button>
+									{% endif %}
+								{% verbatim %}
+							</div>
+						</li>
+					{% endverbatim %}
+				{% endif %}
+			</ul>
+		</div>
+		<div class="text-center" ng-show="articleList.length > 0 || requestStatus == true">
+			<div id="load-more-post-spinner" class="sk-spinner sk-spinner-rotating-plane"></div>
+			<button id="load-more-post" class="btn btn-primary" ng-click="getArticleList(pagination.NEXT_PAGE)">Load more posts...</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+<!--modal content -->
+<div class="modal" id="shareModal" tabindex="-1" role="dialog"
+	aria-hidden="true">
+	<div class="modal-dialog">
+		{% verbatim %}
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header text-left">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">Share this post</h4>
+					<!--<small class="font-bold">Select your </small>-->
+				</div>
+				<div class="modal-body">
+					<div class="row well">
+						<div class="col-md-4">
+							<img class="img-responsive" src="{{ shareArticleDetail.image }}" />
+						</div>
+						<div class="col-md-8 text-left">
+							<h3>{{ shareArticleDetail.title }}</h3>
+							<h5>
+								<a href="#">{{ shareArticleDetail.url | domain }}</a>
+							</h5>
+							<p class="text-left">{{ shareArticleDetail.description }}</p>
+						</div>
+					</div>
+					<div class="form-group text-left mb0">
+						<input type="hidden" ng-model="trendingArticleId" value="{{ trendingArticleId }}">
+						<label>Add caption (optional)</label>
+						<input type="text" ng-model="caption" placeholder="What do you think about it?" class="form-control">
+						<br /> 
+						{% endverbatim %}
+							<div  style="display: none;">
+								{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty and response.fbSocialProfileDetail.name is not empty %}
+									<label class="checkbox-inline i-checks">
+										<input type="checkbox" name="fbProfile" checked value="1"> Post on Facebook ({{ response.fbSocialProfileDetail.name }})
+									</label>
+								{% else %}
+									<input type="checkbox" name="fbProfile" value="1" style="display: none;">
+								{% endif %}
+								{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty and response.twSocialProfileDetail.name is not empty %}
+									<label class="checkbox-inline i-checks">
+										<input type="checkbox" name="twProfile" checked value="1"> Post on Twitter ({{ response.twSocialProfileDetail.name }})
+									</label>
+								{% else %}
+									<input type="checkbox" name="twProfile" value="1" style="display: none;">
+								{% endif %}
+							</div>
+						{% verbatim %}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white btn-rounded" data-dismiss="modal">Cancel</button>
+					<button id="post-now" type="button" class="btn btn-rounded" ng-click="postArticle(shareArticleDetail.url)"> <i class="fa fa-facebook" id="icon-fb"> </i> <i  id="icon-tw" class="fa fa-twitter"> </i> Share</button>
+				</div>
+			</div>
+		{% endverbatim %}
+	</div>
+</div>
+
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular-route.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+<script src="{{ asset('bundles/dbapp/app/js/BaseService.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/app/js/PostController.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+
+<script>
+$(document).ready(function () {
+	$('.i-checks').iCheck({
+    	checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+	});
+});
+</script>
+
+
+{% endblock %}

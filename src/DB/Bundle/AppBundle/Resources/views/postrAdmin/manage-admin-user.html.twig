@@ -1,0 +1,86 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block containerHeader %}
+	{% if app.request.attributes.get('_route') == 'db_dy_quiz_admin_user_edit'%}
+		<h2>Edit User</h2>
+	{% else %}
+		<h2>New Admin User</h2>
+	{% endif %}
+{% endblock %}
+
+{% block pageAction %}
+{% endblock %}
+
+
+{% block container %}
+<div id="error-message" class="alert alert-danger alert-dismissable" style="display: none;">
+	
+</div>
+<div class="ibox">
+	<div class="ibox-title"><h4>User Information</h4></div>
+	<div class="ibox-content">
+		{% if response.adminUserDetail is defined and response.adminUserDetail is not empty %}
+			<form id="adminUserForm" name="adminUserForm" action="{{ path('db_postreach_admin_update_admin_user') }}" method="post" role="form">
+				<input type="hidden" name="adminUserForm[adminUserId]" value="{{ response.adminUserDetail.adminUserId }}">
+		{% else %}
+			<form id="adminUserForm" name="adminUserForm" action="{{ path('db_postreach_admin_add_admin_user') }}" method="post" role="form">
+		{% endif %}
+			<fieldset class="form-horizontal">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Name:</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" name="adminUserForm[name]" value="{{ response.adminUserDetail.name | default('') }}" placeholder="User name" required="required">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Email:</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" name="adminUserForm[email]" value="{{ response.adminUserDetail.email | default('') }}" placeholder="User email" required="required">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Password:</label>
+					<div class="col-sm-10">
+						<input type="password" class="form-control" name="adminUserForm[password]" id="adminUserForm_password" placeholder="Password" required="required">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Confirm Password:</label>
+					<div class="col-sm-10">
+						<input type="password" class="form-control" name="adminUserForm[confirmPassword]" id="adminUserForm_confirmPassword" placeholder="Password" required="required">
+					</div>
+				</div>
+				<hr>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">&nbsp</label>
+					<div class="col-sm-10">
+						<button type="button" class="btn btn-primary btn-cons from-left" id="adminUserForm-submit-btn">
+							<span>Save</span>
+						</button>
+						<button type="button" class="btn btn-default btn-cons from-left">
+							<span>Cancel</span>
+						</button>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script>
+	$(document).ready(function(){
+		$('#adminUserForm-submit-btn').on('click', function() {
+			if($('#adminUserForm_password').val() != $('#adminUserForm_confirmPassword').val()) {
+				$('#error-message').text('Password and confirm passwords should be match').show();
+			} else {
+				$('#adminUserForm').submit();	
+			}
+		});
+    });
+</script>
+{% endblock %}

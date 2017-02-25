@@ -1,0 +1,243 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/switchery/switchery.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/plugins/chosen/bootstrap-chosen.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Post Preferences</h2>
+	<p>Choose how and when the posts are shared</p>
+{% endblock %}
+
+{% block pageAction %}
+	<button type="button" class="btn btn-primary save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+{% endblock %}
+
+{% block container %}
+<div class="tabs-container">
+	{% if response.error is defined and response.error is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-danger">{{ response.error }}</div>
+		</div>
+	{% endif %}
+	{% if response.message is defined and response.message is not empty %}
+		<div class="error-desc alert-message">
+			<div class="text-center alert alert-success">{{ response.message }}</div>
+		</div>
+	{% endif %}
+	<div class="error-desc alert-message error-message" style="display: none;">
+		<div class="text-center alert alert-danger"></div>
+	</div>
+	<div class="tabs">
+		<ul class="nav nav-tabs">
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_category'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_category') }}">Categories</a></li>
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_frequency_settings'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_frequency_settings') }}">Frequency &amp; Settings</a></li>
+			<li {% if app.request.attributes.get('_route') == 'db_postreach_post_preference_social_networks'%} class="active" {% endif %}><a href="{{ path('db_postreach_post_preference_social_networks') }}">Social Networks</a></li>
+		</ul>
+		<div class="tab-content ">
+			<div id="tab-6" class="tab-pane active">
+				<div class="panel-body text-center">
+					<h3 class="font-bold">Your Profile, Your Choice</h3>
+					<div class="error-desc">
+						You picked the categories, we pick the best time for you to get
+						the best exposure.
+						<hr />
+						<form id="accountFrequencyForm" name="accountFrequencyForm" action="{{ path('db_postreach_post_preference_frequency_settings') }}" method="post">
+							{% set autopilotSelect = '' %}
+							{% set manualSelect = 'panel-selected' %}
+							{% if response.accountFrequencyDetail is defined and response.accountFrequencyDetail is not empty %}
+								{% if response.accountFrequencyDetail.category == constant('DB\\Bundle\\AppBundle\\Entity\\AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_AUTOPILOT') %}
+									{% set autopilotSelect = 'panel-selected' %}
+									{% set manualSelect = '' %}
+								{% endif %}	
+								
+								{% if response.accountFrequencyDetail.category == constant('DB\\Bundle\\AppBundle\\Entity\\AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_MANUAL_POST') %}
+									{% set autopilotSelect = '' %}
+									{% set manualSelect = 'panel-selected' %}
+								{% endif %}
+							{% endif %}
+							<input type="hidden" id="accountFrequencyForm_category" name="accountFrequencyForm[category]" value="{{ response.accountFrequencyDetail.category | default(constant('DB\\Bundle\\AppBundle\\Entity\\AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_AUTOPILOT')) }}"/>
+							
+							<div class="container">
+								<div class="row">
+									<div class="col-md-4 col-md-offset-2 col-sm-6 col-xs-12 plan-choices">
+										<div id="panelmanual" class="panel panel-default {{ manualSelect }}">
+											<div class="panel-heading">
+												<h3 class="panel-title">Manual Posts</h3>
+											</div>
+											<div class="panel-body">
+												<ul class="list-group text-left">
+													<li class="list-group-item"><i class="fa fa-user"
+														aria-hidden="true"></i> Post yourself with one click</li>
+													<li class="list-group-item"><i class="fa fa-clock-o"
+														aria-hidden="true"></i> You post at your availability</li>
+													<li class="list-group-item"><i class="fa fa-envelope-o"
+														aria-hidden="true"></i> Recieve Daily Updates to post</li>
+													<li class="list-group-item"><button type="button"
+															class="click-manual btn btn-block btn-default btn-outline">
+															Choose Manual Post</button></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4 col-sm-6 col-xs-12 plan-choices">
+										<div id="panelauto" class="panel panel-default {{ autopilotSelect }}">
+											<div class="panel-heading">
+												<h3 class="panel-title">Autopilot</h3>
+											</div>
+											<div class="panel-body">
+												<ul class="list-group text-left">
+													<li class="list-group-item"><i class="fa fa-magic"
+														aria-hidden="true"></i> Post automatically for you</li>
+													<li class="list-group-item"><i class="fa fa-calendar"
+														aria-hidden="true"></i> Timed delivery for best exposure</li>
+													<li class="list-group-item"><i class="fa fa-wrench"
+														aria-hidden="true"></i> Quick easy setup</li>
+													<li class="list-group-item"><button type="button"
+															class="click-autopilot btn btn-block btn-default btn-outline">
+															Choose Autopilot</button></li>
+												</ul>
+											</div>
+											{#<span class="label label-success pull-left">Recommended</span>#}
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6 col-md-offset-3 m-b">
+									<div class="form-group text-center">
+										<div id="post-frequency" {% if manualSelect is defined and manualSelect is not empty %} class="hidden" {% endif %}>
+											<div class="form-group">
+												<label class="font-noraml">How often do you want us
+													to post for you?</label>
+												<hr />
+												
+												<div class="alert alert-danger alert-dismissable day-error-message" style="display: none;">
+													<span>Please select atleast one day to Autopilot!</span>
+												</div>
+												<div class="col-sm-12 text-left no-paddings">
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[sunday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.sunday is defined and response.accountFrequencyDetail.sunday == '1' %} checked="" {% endif %}> <i></i> <span
+															class="font-normal">Sunday</span>
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[monday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.monday is defined and response.accountFrequencyDetail.monday == '1' %} checked="" {% endif %}> <i></i>
+															Monday
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[tuesday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.tuesday is defined and response.accountFrequencyDetail.tuesday == '1' %} checked="" {% endif %}> <i></i>
+															Tuesday
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[wenesday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.wenesday is defined and response.accountFrequencyDetail.wenesday == '1' %} checked="" {% endif %}> <i></i>
+															Wednesday
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[thursday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.thursday is defined and response.accountFrequencyDetail.thursday == '1' %} checked="" {% endif %}> <i></i>
+															Thursday
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[friday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.friday is defined and response.accountFrequencyDetail.friday == '1' %} checked="" {% endif %}> <i></i>
+															Friday
+														</label>
+													</div>
+													<div class="checkbox-inline i-checks">
+														<label> <input name="accountFrequencyForm[saturday]" type="checkbox" value="1" {% if response.accountFrequencyDetail.saturday is defined and response.accountFrequencyDetail.saturday == '1' %} checked="" {% endif %}> <i></i>
+															Saturday
+														</label>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-group">
+											<br /> <br /> <label class="font-noraml">Select Your
+												Time Zone</label>
+											<hr />
+											<select class="form-control m-b" name="accountFrequencyForm[timezone]">
+												<option value="">--None--</option>
+												{% for timezoneArea, timezoneDetail in response.timezoneList %}
+													 <optgroup label="{{ timezoneArea }}">
+														 {% for timezone, city in timezoneDetail %}
+														 	<option {% if response.accountFrequencyDetail is defined and response.accountFrequencyDetail.timezone is defined and  response.accountFrequencyDetail.timezone == timezone %} selected="selected"" {% endif %} value="{{ timezone }}">{{ timezone }}</option>
+														 {% endfor %}
+													</optgroup>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<!-- Switchery -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/switchery/switchery.js') }}" type="text/javascript"></script>
+<!-- Fancy Checkbox -->
+<!-- Chosen -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/chosen/chosen.jquery.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+        
+        var elem = document.querySelector('.js-switch');
+        var switchery = new Switchery(elem, { color: '#1AB394' });
+
+        var elem_2 = document.querySelector('.js-switch_2');
+        var switchery_2 = new Switchery(elem_2, { color: '#ED5565' });
+
+        var elem_3 = document.querySelector('.js-switch_3');
+        var switchery_3 = new Switchery(elem_3, { color: '#1AB394' });
+        
+        $('.chosen-select').chosen({width: "100%"});
+
+        $(".click-manual").click(function(){
+            $("#post-frequency").addClass("hidden");
+            $("#panelmanual").addClass("panel-selected");
+            $("#panelauto").removeClass("panel-selected");
+            $('#accountFrequencyForm_category').val("{{ constant('DB\\Bundle\\AppBundle\\Entity\\AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_MANUAL_POST') }}");
+        });
+        $(".click-autopilot").click(function(){
+            $("#post-frequency").removeClass("hidden");
+            $("#panelauto").addClass("panel-selected");
+            $("#panelmanual").removeClass("panel-selected");
+            $('#accountFrequencyForm_category').val("{{ constant('DB\\Bundle\\AppBundle\\Entity\\AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_AUTOPILOT') }}");
+        });  
+
+        $('button.save[type="button"]').on('click', function() {
+            var category = $('#accountFrequencyForm_category').val();
+            if('Autopilot' == category) {
+	        	if(jQuery('input[name*="accountFrequencyForm"][type="checkbox"]:checked').length > 0) {
+	        		$('#accountFrequencyForm').submit();
+				} else {
+					$('.day-error-message').show();
+					$("html,body").animate({scrollTop:$('.day-error-message').offset().top}, 200);
+				}
+            } else {
+            	$('#accountFrequencyForm').submit();
+            }
+        });
+
+        setTimeout(function(){ $('.alert-message').hide(); }, 3000);
+    });
+</script> 
+{% endblock %}

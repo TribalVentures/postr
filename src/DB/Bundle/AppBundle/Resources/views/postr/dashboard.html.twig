@@ -1,0 +1,157 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block containerHeader %}
+	<h2>Dashboard</h2>
+	<p>Recent posts shared on your social profiles</p>
+{% endblock %}
+
+{% block pageAction %}
+	<a href="{{ path('db_postreach_new_post') }}" class="btn btn-primary"><i class="fa fa-bullhorn" aria-hidden="true"></i> New Post</a>
+{% endblock %}
+
+{% block anguler %}ng-app="POLL" ng-controller="DashboardController"{% endblock %}
+
+{% block container %}
+<div id="dashboard-spinner" class="row" style="display: none;">
+	<div class="col-lg-12">
+		<div class="ibox float-e-margins">
+			<div class="ibox-content">
+				<div class="sk-spinner sk-spinner-rotating-plane"></div>
+			</div>
+		</div>
+	</div>
+</div>
+{% verbatim %}
+	<div id="dashboard" class="row">
+		<div class="col-lg-6">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-success pull-right">Lifetime</span>
+					<h5>Posts</h5>
+	
+				</div>
+				<div class="ibox-content">
+					<h1 class="no-margins">{{ summary.post }}</h1>
+					<small>Total posts</small>
+					<div class="stat-percent font-bold text-success">
+						{{ summary.postIn }} <i class="fa fa-bolt"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-info pull-right">Lifetime</span>
+					<h5>Reach</h5>
+				</div>
+				<div class="ibox-content">
+					<h1 class="no-margins">{{ summary.reach }}</h1>
+					<small>Total Impressions</small>
+					<div class="stat-percent font-bold text-info">
+						{{ summary.reachIn }} <i class="fa fa-level-up"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endverbatim %}
+		{#<div class="col-lg-3">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">Lifetime</span>
+					<h5>Shares</h5>
+				</div>
+				<div class="ibox-content">
+					<h1 class="no-margins">{{ summary.share }}</h1>
+					<div class="stat-percent font-bold text-navy">
+						{{ summary.shareIn }} <i class="fa fa-level-up"></i>
+					</div>
+					<small>Shares</small>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-danger pull-right">Lifetime</span>
+					<h5>Visits</h5>
+				</div>
+				<div class="ibox-content">
+					<h1 class="no-margins">{{ summary.visit }}</h1>
+					<div class="stat-percent font-bold text-navy">
+						{{ summary.visitIn }} <i class="fa fa-level-up"></i>
+					</div>
+					<small>Visited Your Site</small>
+				</div>
+			</div>
+		</div>#}{% verbatim %}
+	</div>
+{% endverbatim %}
+
+<!-- table with posts -->
+<div class="ibox">
+	<div class="ibox-title">
+		<h5>Recent posts shared on your social profiles</h5>
+	</div>
+	<div class="ibox-content">
+		<div class="shared-posts">
+			<ul>
+				{% verbatim %}
+					<li class="row" ng-repeat="postDetail in postList">
+						<div class="col-md-2">
+							<img ng-src="{{ postDetail.image }}" on-error-src="http://image.shutterstock.com/z/stock-photo-colorful-pillows-on-sofa-close-up-338528252.jpg" class="img-responsive" />
+						</div>
+						<div class="col-md-6">
+							<dl>
+								<h3>{{ postDetail.title }}</h3>
+								<p>{{ postDetail.url | domain }}</p>
+								<p>{{ postDetail.description }}</p>
+								<p>
+									<span><small>Posted on: {{ postDetail.creationDateAt }}</small></span>
+								</p>
+								<!--root domain of article source -->
+								<p class="posted-actions">
+									<a class="btn btn-sm btn-primary" target="_" href="{{ postDetail.url }}"><i class="fa fa-external-link" aria-hidden="true"></i> View Article </a> 
+									<a class="btn btn-sm btn-success" ng-show="postDetail.facebookPostId != '0'" target="_" href="https://facebook.com/{{ postDetail.facebookPostId }}"><iclass="fa fa-facebook" aria-hidden="true"></i> View Post </a> 
+									<a class="btn btn-sm btn-info" ng-show="postDetail.twitterPostId != '0'"  target="_" href="https://twitter.com/"><i class="fa fa-twitter" aria-hidden="true"></i> View Tweet </a>
+								</p>
+							</dl>
+						</div>
+						<div class="col-md-4">
+							<div class="reach col-xs-4 pull-right">
+								<h3 class="mb0">{{ postDetail.social }}</h3>
+								<small>Reach</small>
+							</div>
+						{% endverbatim %}
+						
+							{#<div class="shares col-xs-4">
+								<h3 class="mb0">560</h3>
+								<small>Shares</small>
+							</div>
+							<div class="visits col-xs-4">
+								<h3 class="mb0">1,260</h3>
+								<small>Visits</small>
+							</div>#}
+						{% verbatim %}
+						</div>
+					</li>
+				{% endverbatim %}
+			</ul>
+		</div>
+		<div class="text-center">
+			<div id="load-more-post-spinner" class="sk-spinner sk-spinner-rotating-plane"></div>
+			<button id="load-more-post" class="btn btn-primary" ng-click="getSocialPostList(pagination.NEXT_PAGE)">Load more...</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular-route.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/app/js/BaseService.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/app/js/DashboardController.js') }}?s={{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+{% endblock %}

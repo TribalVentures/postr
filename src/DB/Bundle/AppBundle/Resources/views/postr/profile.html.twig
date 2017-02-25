@@ -1,0 +1,120 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/jasny/jasny-bootstrap.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Profile</h2>
+	<p>Your profile and account settings</p>
+{% endblock %}
+
+{% block pageAction %}
+	<button type="button" class="btn btn-primary save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+{% endblock %}
+
+{% block container %}
+{% if response.error is defined and response.error is not empty %}
+	<div class="alert alert-danger alert-dismissable">
+		<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+		{{ response.error }}
+	</div>
+{% endif %}
+<!-- profile form -->
+<div class="tabs-container">
+	<div class="tabs">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#tab-6">Account Info</a></li>
+			<li class=""><a data-toggle="tab" href="#tab-7">Change Password</a></li>
+		</ul>
+		<form name="profileForm" id="profileForm" action="{{ path('db_postreach_profile') }}" method="post" enctype="multipart/form-data">
+			<div class="tab-content ">
+				<div id="tab-6" class="tab-pane active">
+					<div class="panel-body text-center">
+						<h3 class="font-bold">Account Information</h3>
+						<div class="error-desc">
+							<!--You picked the categories, we pick the best time for you to get the best exposure. -->
+							<hr />
+							<div class="row">
+								<div class="col-md-6 col-md-offset-3 m-b text-left">
+									<div class="form-group">
+										<div class="form-group">
+											<label>First Name</label> 
+											<input name="profileForm[firstName]" value="{{ response.userDetail.firstName | default('') }}" type="text" placeholder="First Name" class="form-control">
+										</div><div class="form-group">
+											<label>Last Name</label> 
+											<input name="profileForm[lastName]" value="{{ response.userDetail.lastName | default('') }}" type="text" placeholder="Last Name" class="form-control">
+										</div>
+										<div class="form-group">
+											<label>Email</label>
+											<input name="profileForm[email]" value="{{ response.userDetail.email | default('') }}" type="email" placeholder="Enter email" class="form-control">
+										</div>
+										{#<label>Profile Picture</label>
+										{% if response.userDetail.profile is defined and response.userDetail.profile is not empty %}
+											<div>
+												<img alt="{{ response.userDetail.firstName | default('') }} {{ response.userDetail.lastName | default('') }}" src="{{ asset(response.userDetail.profile) }}" style="max-width: 100px;">
+											</div><br/>
+										{% endif %}
+										<div class="fileinput fileinput-new input-group" data-provides="fileinput">
+											<div class="form-control" data-trigger="fileinput" style="overflow: hidden; white-space: nowrap;">
+												<i class="glyphicon glyphicon-file fileinput-exists"></i> 
+												<span class="fileinput-filename"></span>
+											</div>
+											<span class="input-group-addon btn btn-default btn-file">
+												<span class="fileinput-new">Browse</span>
+												<span class="fileinput-exists">Change</span> 
+												<input name="profileForm[profileImage]" type="file"/>
+											</span> 
+											<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+										</div>#}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="tab-7" class="tab-pane">
+					<div class="panel-body text-center">
+						<h3 class="font-bold">Change Password</h3>
+						<div class="error-desc">
+							<hr />
+							<div class="row">
+								<div class="col-md-6 col-md-offset-6 m-b text-left">
+									<div class="form-group">
+										<label>Current Password</label>
+										<input name="profileForm[currentPassword]" type="password" placeholder="Current Password" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>New Password</label>
+										<input name="profileForm[newPassword]" type="password" placeholder="New Password" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Confirm New Password</label>
+										<input name="profileForm[confirmNewPassword]" type="password" placeholder="Confirm Password" class="form-control">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<hr />
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<!-- Jasny -->
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/jasny/jasny-bootstrap.min.js') }}"></script>
+<script>
+	$(document).ready(function(){
+		$('button.save[type="button"]').on('click', function() {
+			$('#profileForm').submit();
+		});
+	});
+</script>
+{% endblock %}

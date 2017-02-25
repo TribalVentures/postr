@@ -1,0 +1,97 @@
+{% extends 'DBAppBundle::step-Layout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block stepHeaderContainer %}
+	<h2>Top Interior Categories</h2>
+	<p>
+		<strong>Select the topics are you interested in sharing with your
+			social media fans and followers</strong>
+	</p>
+{% endblock %}
+
+{% block container %}
+{% if response.error is defined and response.error is not empty %}
+	<div class="alert alert-danger alert-dismissable">
+		<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+		{{ response.error }}
+	</div>
+{% endif %}
+
+<div class="error-desc alert-message error-message" style="display: none;">
+	<div class="text-center alert alert-danger"></div>
+</div>
+<form id="categoryForm" name="categoryForm" action="{{ path('db_postreach_register_select_topic') }}" method="post">
+	<div class="col-md-10 col-md-offset-1">
+		{% if response.categoryList is defined and response.categoryList is not empty  %}
+			{% for category in response.categoryList %}
+				{% if loop.first or loop.index % 4 == 1 %}
+					<div class="row">
+				{% endif %}
+			    <div class="col-md-3">
+					<div class="ibox">
+						<div class="ibox-content product-box">
+							<label> 
+								{% if category.image is not empty %}
+									<img alt="{{ category.category }}" src="{{ asset(category.image) }}" class="img-responsive" alt=""/>
+								{% else %}
+									<img alt="{{ category.category }}" src="https://www.pgeveryday.com/LayoutAssets/Core/Images/image-preview-default.jpg" class="img-responsive" alt=""/>
+								{% endif %}
+								<div class="product-desc">
+									<center>
+										<h3>{{ category.category }}</h3>
+										<span>
+											<input name="categoryForm[categoryId][]" value="{{ category.categoryId }}" type="checkbox" class="i-checks" {% if category.selected is defined and category.selected == true %} checked="checked" {% endif %}>
+										</span>
+									</center>
+								</div>
+							</label>
+						</div>
+					</div>
+				</div>
+				{% if loop.last or loop.index % 4 == 0 %}
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+	</div>
+		
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="continue-action">
+				<button type="button" class="btn btn-primary btn-lg btn-block btn-continue">Continue</button>
+			</div>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+	<!-- iCheck -->
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.btn-continue').on('click', function() {
+            	if(jQuery('input.i-checks[type="checkbox"]:checked').length > 2) {
+            		$('#categoryForm').submit();
+            	} else {
+            		$('.error-message .alert-danger').text('You should pick at least 3 categories to continue');
+            		$('.error-message').show();
+            		setTimeout(function(){ $('.alert-message').hide(); }, 5000);
+            	}
+           	});
+        });
+    </script>
+{% endblock %}

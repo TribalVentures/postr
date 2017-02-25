@@ -1,0 +1,49 @@
+{% extends 'DBAppBundle::step-Layout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block stepHeaderContainer %}
+	<h2>Welcome to Interior Postr!</h2>
+{% endblock %}
+
+{% block container %}
+<div class="wrapper wrapper-content">
+	{% if response.message is defined and response.message is not empty %}
+		<div class="middle-box mt0 animated fadeIn">
+			<h3 class="font-bold text-center">Thank you</h3>
+			<div class="error-desc">
+				<div class="text-center alert alert-success">{{ response.message }}</div>
+				<hr />
+			</div>
+		</div>
+	{% endif %}
+	{% if response.error is defined and response.error is not empty %}
+		<div class="middle-box mt0 animated fadeIn">
+			<h3 class="font-bold text-center">Problem while confirm</h3>
+			<div class="error-desc">
+				<div class="text-center alert alert-danger">{{ response.error }}</div>
+				<hr />
+			</div>
+		</div>
+	{% endif %}
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="continue-action">
+				<form action="{{ path('db_postreach') }}" method="post">
+					<button type="submit" class="btn btn-primary btn-lg btn-block">Go to login</a>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+{% endblock %}

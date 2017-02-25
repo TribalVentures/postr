@@ -1,0 +1,67 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block title %}InteriorPostr{% endblock %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_attr %} class="gray-bg"{% block anguler %}{% endblock %}{% endblock %}
+
+{% block body %}
+<div class="middle-box text-center loginscreen   animated fadeInDown">
+        <div>
+            <div><h2 class="logo-name"><img src="{{ asset('bundles/dbapp/postr/img/postr-logo.png') }}" /></div>
+            <h3>Welcome to Postr</h3>
+            <p>Automate your Social Media content.
+            <p>Strictly for Interior Decorators and Designers!</p>
+            {% if response.alreadyExist is defined and response.alreadyExist is not empty %}
+				<div class="error-desc alert-message">
+					<div class="text-center alert alert-danger">{{ response.alreadyExist }}, <br/>If you forgot password then <a href="{{ path('db_postreach_forgot_password') }}">click here</a> to reset password.</div>
+				</div>
+			{% endif %}
+            <form id="accountForm" name="accountForm" action="{{ path('db_postreach_register') }}" method="post" class="m-t" role="form">
+                <input type="hidden" name="sid" value="{{ response.sid | default('') }}">
+                <input type="hidden" name="dc" value="{{ response.discountCoupon | default('') }}">
+                <input type="hidden" name="pp" value="{{ response.planId | default('') }}">
+
+                <div class="form-group">
+                    <input name="accountForm[account]" type="text" class="form-control" placeholder="Name" required="">
+                </div>
+                <div class="form-group">
+                    <input name="accountForm[email]" type="email" class="form-control" placeholder="Email" required="">
+                </div>
+                <div class="form-group">
+                    <input name="accountForm[password]" type="password" class="form-control" placeholder="Password" required="">
+                </div>
+                {#<div class="form-group">
+                        <div class="checkbox i-checks"><label> <input name="accountForm[agree]" type="checkbox"><i></i> Agree the terms and policy </label></div>
+                </div>#}
+                
+                <button type="submit" class="btn btn-primary block full-width m-b">Register For Your Free Trial</button>
+
+                <p class="text-muted text-center"><small>Already have an account?</small></p>
+                
+                <a class="btn btn-sm btn-white btn-block" href="{{ path('db_postreach') }}">Login</a>
+            </form>
+            <p class="m-t"> <small>Copyright &copy; 2017. All rights reserved.</small> </p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+	<!-- iCheck -->
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/iCheck/icheck.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+{% endblock %}

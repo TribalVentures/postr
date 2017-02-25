@@ -1,0 +1,5 @@
+DB_app:
+    resource: "@DBAppBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

@@ -1,0 +1,23 @@
+ {% block html %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>       <html class="no-js lt-ie9 lt-ie8 lt-ie7">   <![endif]-->
+<!--[if IE 7]>          <html class="no-js lt-ie9 lt-ie8">          <![endif]-->
+<!--[if IE 8]>          <html class="no-js lt-ie9">                 <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js">                        <!--<![endif]-->
+{% endblock %}
+
+<head>
+	<title>{% block title %}eTicket{% endblock %}</title>
+    {% block header %}{% endblock %}
+    
+    {% block stylesheet %}{% endblock %}
+    
+	{% block javascript %}{% endblock %}
+        
+</head>
+<body {% block body_attr %}{% endblock %}>
+{% block body %}{% endblock %}
+{% block bodyOutPopup %}{% endblock %}
+{% block bodyOut %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,124 @@
+{% extends "::base.html.twig" %}
+{% block title %}InteriorPostr{% endblock %}
+{% block header %}
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{{ asset('bundles/dbapp/assets/plugins/boostrapv3/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+		#improve { 
+			margin: 0px;
+		}
+		
+		.primo-action {
+			right: 0;
+			position: fixed;
+		}
+	</style>
+	{% block pageStyle %}{% endblock %}
+{% endblock %}
+
+{% block javascript %}
+	{% block pagesScript %}{% endblock %}
+{% endblock %}
+
+{% block body_attr %}{% endblock %}
+
+{% block body %}
+	{% block container %}{% endblock %}
+{% endblock %}
+
+{% block bodyOut %}
+	<script src="{{ asset('bundles/dbapp/assets/plugins/jquery/jquery-1.11.1.min.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('bundles/dbapp/assets/plugins/jquery-animateNumbers/jquery.animateNumbers.js') }}" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var cid = '{{ response.campaign.sessionId|default('0') }}';
+		var ftime = (new Date).getTime();
+		var totalMilisecond = 300000;
+		var stime = (new Date).getTime();
+		var ceTimer = null;
+		var time = 10;
+		var ckey = '{{ response.campaign.campaignKey|default('0') }}';
+		var _case = '{{ response.layout|default('0') }}';
+		var primoPoll = {				
+				request: function(url, data) {
+					xmlhttp=new XMLHttpRequest();
+				    xmlhttp.open("GET", url + '?' + $.param(data) ,true);
+				    xmlhttp.send();
+				},
+				createCookie: function (name,value,days) {
+				    if (days) {
+				        var date = new Date();
+				        date.setTime(date.getTime()+(days*24*60*60*1000));
+				        var expires = "; expires="+date.toGMTString();
+				    }
+				    else var expires = "";
+				    document.cookie = name+"="+value+expires+"; path=/";
+				},
+				readCookie: function (name) {
+				    var nameEQ = name + "=";
+				    var ca = document.cookie.split(';');
+				    for(var i=0;i < ca.length;i++) {
+				        var c = ca[i];
+				        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+				    }
+				    return null;
+				}, 
+				eraseCookie: function(name) {
+				    createCookie(name,"",-1);
+				},
+				respond: function(value) {
+					var u = "{{ path('db_api_v1_answer_poll') }}";
+					var param = {};
+					switch (_case) {						
+	                	case 'a':					
+	                	case 'b':						
+	                	case 'c': {
+	                		param.v = value;
+	                		param.campaign = ckey;
+	                		param.cid = cid;
+
+	                		$('#footer-1').hide();
+	                		$('#footer-1-slide').slideDown("slow").show();
+	                	}; break;
+					}
+
+					primoPoll.createCookie('__' + ckey + "ans", true);
+										
+					primoPoll.request(u, param);
+				},
+				ce: function(_cid) {					
+					var vtime = (new Date).getTime() - stime;
+					stime = (new Date).getTime();
+
+					//Convert milisecond into second
+					vtime = Math.round(vtime / 1000);
+					param = {'cid':_cid, 't': vtime};
+					primoPoll.request("{{ path('db_api_v1_client_event') }}", param);
+					
+					var totalTIme = stime - ftime; 
+					if(Math.round(totalTIme) > totalMilisecond) {
+						clearInterval(ceTimer);	
+					}					
+				}
+		};
+		
+		$(document).ready(function() {
+			primoPoll.createCookie('__cfghdekey', ckey);
+			
+			var __ppollsid = primoPoll.readCookie('__' + ckey + "cid");
+			if(!__ppollsid || __ppollsid == '' || __ppollsid == null) {
+				primoPoll.createCookie('__' + ckey + "cid", cid);
+			}
+
+			ceTimer = setInterval(function() {primoPoll.ce(cid);}, 1000 * time);
+		});
+	</script>
+	
+    {% block bodyOutPagesScript %}{% endblock %}
+{% endblock %}
+
+{% block bodyCommon %}
+{% endblock %}

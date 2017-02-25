@@ -1,0 +1,185 @@
+/*
+ *
+ *   Interior Postr Customization
+ *
+*/
+/**helper classes**/
+.mt0 {
+    margin-top: 0 !important;
+}
+.mb0 {
+    margin-bottom: 0 !important;
+}
+/**Select Categories/Topcis ***/
+/**page wrapper for topic grid**/
+.wrapper-content {
+    padding: 40px;
+    overflow: hidden;
+}
+.product-box {
+    overflow: hidden;
+}
+.category-name {
+    display: inline-block;
+}
+td.project-status {
+    max-width: 50px;
+    text-align: center;
+}
+.panel-title>.small, .panel-title>.small>a, .panel-title>a, .panel-title>small, .panel-title>small>a {
+    color: inherit;
+    display: block;
+}
+.panel-title a:before {
+    content: '\f054';
+    font-family: 'FontAwesome';
+    width: 20px;
+    display: inline-block;
+}
+.panel-title a.collapsed:before {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    width: 20px;
+    display: inline-block;
+}
+.nav-tabs > li > a {
+    color: #A7B1C2;
+    font-weight: 600;
+    padding: 10px 20px 10px 25px;
+    background: #eee;
+    border: 1px solid #ddd;
+    border-bottom: 0;
+}
+.tabs-container .nav-tabs > li a:hover {
+    background: #eee;
+    border-color: #dddddd;
+    color: #4d4d4d;
+}
+label.checkbox-block {
+    display: block;
+    cursor: pointer;
+}
+.chosen-container-multi .chosen-choices li.search-choice {
+    background: #1ab394;
+    border: 1px solid #1ab394;
+    color: #fff;
+}
+.logo-name {
+    color: #e6e6e6;
+    font-size: 120px;
+}
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+.recommended-posts ul, .shared-posts ul {
+    padding: 0;
+    list-style-type: none;
+}
+.recommended-posts ul li.row, .shared-posts ul li.row {
+    border-bottom: 1px solid #e7eaec;
+    padding: 15px;
+}
+.label-border {
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    border-radius: 0.35em;
+    display: inline-block;
+}
+.continue-action {
+    padding: 30px 0;
+    margin-bottom: 20px;
+}
+.automatic-block, .manual-block {
+    border: 1px solid #ddd;
+}
+.checkbox-inline.i-checks {
+        min-width: 100px;
+        line-height: 40px;
+        margin-right: 20px;
+        margin-left: 0 !important;
+    }
+
+#post-frequency {
+    overflow: hidden;
+}
+.plan-choices {
+    margin-bottom: 40px;
+}
+.plan-choices .panel-body {
+    padding: 0;
+}
+.plan-choices .panel-body .list-group {
+    margin-bottom: 0;
+}
+.no-paddings {
+    padding: 0;
+}
+.container {
+    max-width: 100%;
+}
+/**plan selection**/
+.plan-choices .panel.panel-selected {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #858585;
+    border-width: 0;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: all 0.25s;
+}
+.panel-selected>.panel-heading {
+    background: #1c84c6;
+    color: #fff;
+}
+.panel-selected .btn-default {
+    background: #1c84c6 !important;
+    color: #fff !important;
+    border: 1px solid #1c84c6 !important;
+}
+.panel-selected .btn-default:hover {
+    background: #1c84c6 !important;
+    color: #fff !important;
+}
+.panel-selected .btn-default:after {
+    content: '\f058';
+    font-family: 'FontAwesome';
+    font-size: 120%;
+    line-height: 150%;
+    margin-left: 10px;
+}
+.panel-default .btn-default {
+    background-color: #f5f5f5;    
+}
+.panel-default .btn-default:hover {
+    background: #1c84c6;
+    color: #fff;
+    border-color: #1c84c6;
+}
+.panel-default .list-group-item, .panel-selected .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+}
+@media screen and (max-width: 767px) {
+    .plan-choices {
+        margin-bottom: 20px;
+    }
+    .posted-actions .btn {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .checkbox-inline.i-checks {
+        display: block;
+        text-align: left;
+        clear: left;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .checkbox-inline.i-checks label {
+        border: 1px solid #ddd;
+        display: block;
+        padding-left: 10px;
+        background: #fff;
+    }
+}

@@ -1,0 +1,336 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block pageInStyle %}
+	<link href="{{ asset('bundles/dbapp/postr/css/plugins/jasny/jasny-bootstrap.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block containerHeader %}
+	<h2>Category</h2>
+{% endblock %}
+
+{% block pageAction %}
+{% endblock %}
+
+{% block anguler %}ng-app="POLL" ng-controller="ManageCategoryController"{% endblock %}
+
+{% block container %}
+<div class="row">
+	<div class="ibox">
+		<div class="ibox-title">
+			<h5>Manage category</h5>
+		</div>
+		<div class="ibox-content">
+			<form name="categoryForm" action="{{ path('db_postreach_admin_update_category') }}" role="form" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="categoryForm[categoryId]" value="{{ response.categoryDetail.categoryId | default('0') }}">
+			<input type="hidden" name="categoryForm[categoryType]" value="{{ response.categoryDetail.categoryType | default('') }}">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Category</label>
+						<input name="categoryForm[category]" type="text" required="" class="form-control" value="{{ response.categoryDetail.category | default('') }}">
+					</div>
+				</div>
+				<div class="col-md-12">
+						<label>Profile Picture</label>
+						<div class="fileinput fileinput-new input-group"
+							data-provides="fileinput">
+
+							<div class="form-control" data-trigger="fileinput">
+								<i class="glyphicon glyphicon-file fileinput-exists"></i> <span
+									class="fileinput-filename"></span>
+							</div>
+
+							<span class="input-group-addon btn btn-default btn-file"> 
+								<span class="fileinput-new">Browse</span>
+								<span class="fileinput-exists">Change</span> 
+								<input type="file" name="categoryForm[categoryImage]" />
+							</span>
+							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+						</div>
+					</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Time (In Hours)</label>
+						<input name="categoryForm[fromTime]" type="text" required="" class="form-control" value="{{ response.categoryDetail.fromTime | default('3') }}">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Language</label>
+						<input name="categoryForm[language]" type="text" required="" class="form-control" value="{{ response.categoryDetail.language | default('en') }}">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Size</label>
+						<input name="categoryForm[size]" type="text" required="" class="form-control" value="{{ response.categoryDetail.size | default('150') }}">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Sort By</label>
+						<select name="categoryForm[sortBy]"  id="categoryForm_sortBy" class="form-control ng-pristine ng-valid ng-touched" id="sortBy">
+							{% if response.spikeSortByList is defined and response.spikeSortByList is not empty %}
+								{% for spikeSortBy in response.spikeSortByList %}
+									<option value="{{ spikeSortBy }}" {% if spikeSortBy == response.categoryDetail.sortBy %} selected="selected" {% endif %}>{{ spikeSortBy }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+				</div>
+				<hr>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Include Keywords</label>
+						<input type="hidden" id="categoryForm_includeKeywords" name="categoryForm[includeKeywords]" value="{{ response.categoryDetail.includeKeywords | default('') }}">
+						<select class="form-control ng-pristine ng-valid ng-touched db-list" name="categoryForm[includeKeywordsList]" id="categoryForm_includeKeywordsList" multiple="multiple">
+							{% if response.categoryDetail.includeKeywordsList is defined and response.categoryDetail.includeKeywordsList is not empty %}
+								{% for keywrods in response.categoryDetail.includeKeywordsList %}
+									<option value="{{ keywrods }}">{{ keywrods }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group"  style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_includeKeywordsList', 'categoryForm_includeKeywords')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<input id="addIncludeKeywords" name="addIncludeKeywords" type="text" class="form-control" placeholder="Comma separated keywods to add">
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_includeKeywords', 'categoryForm_includeKeywordsList', 'addIncludeKeywords')">+</button> 
+						</span>
+					</div>	
+				</div>
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Exclude Keywords</label>
+						<input type="hidden" id="categoryForm_excludeKeywords" name="categoryForm[excludeKeywords]" value="{{ response.categoryDetail.excludeKeywords | default('') }}">
+						<select name="categoryForm[excludeKeywordsList]" id="categoryForm_excludeKeywordsList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.excludeKeywordsList is defined and response.categoryDetail.excludeKeywordsList is not empty %}
+								{% for keywrods in response.categoryDetail.excludeKeywordsList %}
+									<option value="{{ keywrods }}">{{ keywrods }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group"  style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_excludeKeywordsList', 'categoryForm_excludeKeywords')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<input id="addExcludeKeywords" name="addExcludeKeywords" type="text" class="form-control db-add"  placeholder="Comma separated keywods to add">
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_excludeKeywords', 'categoryForm_excludeKeywordsList', 'addExcludeKeywords')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<hr>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Include Publisher</label>
+						<input type="hidden" id="categoryForm_includePublisher" name="categoryForm[includePublisher]" value="{{ response.categoryDetail.includePublisher | default('') }}">
+						<select name="categoryForm[includePublisherList]" id="categoryForm_includePublisherList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.includePublisherList is defined and response.categoryDetail.includePublisherList is not empty %}
+								{% for keywrods in response.categoryDetail.includePublisherList %}
+									<option value="{{ keywrods }}">{{ keywrods }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group"  style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_includePublisherList', 'categoryForm_includePublisher')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<input id="addIncludePublisher" name="addIncludePublisher" type="text" class="form-control" placeholder="Comma separated keywods to add">
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_includePublisher', 'categoryForm_includePublisherList', 'addIncludePublisher')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Exclude Publisher</label>
+						<input type="hidden" id="categoryForm_excludePublisher" name="categoryForm[excludePublisher]" value="{{ response.categoryDetail.excludeKeywords | default('') }}">
+						<select name="categoryForm[excludePublisherList]" id="categoryForm_excludePublisherList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.excludePublisherList is defined and response.categoryDetail.excludePublisherList is not empty %}
+								{% for keywrods in response.categoryDetail.excludePublisherList %}
+									<option value="{{ keywrods }}">{{ keywrods }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group" style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_excludePublisherList', 'categoryForm_excludePublisher')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<input id="addExcludePublisher" name="addExcludePublisher" type="text" class="form-control db-add"  placeholder="Comma separated keywods to add">
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_excludePublisher', 'categoryForm_excludePublisherList', 'addExcludePublisher')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<hr>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Include Country</label>
+						<input type="hidden" id="categoryForm_includeCountry" name="categoryForm[includeCountry]" value="{{ response.categoryDetail.includeCountry | default('') }}">
+						<select name="categoryForm[includeCountryList]" id="categoryForm_includeCountryList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.includeCountryList is defined and response.categoryDetail.includeCountryList is not empty %}
+								{% for includeCountry in response.categoryDetail.includeCountryList %}
+									<option value="{{ includeCountry.code }}">{{ includeCountry.name }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group" style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_includeCountryList', 'categoryForm_includeCountry')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<select id="addIncludeCountry" name="addIncludeCountry"  class="form-control ng-pristine ng-valid ng-touched" placeholder="Select topic to add">
+							<option value="">Select country to include</option>
+							{% if response.countryList is defined and response.countryList is not empty %}
+								{% for country in response.countryList %}
+									<option value="{{ country.Code }}">{{ country.Name }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_includeCountry', 'categoryForm_includeCountryList', 'addIncludeCountry')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Exclude Country</label>
+						<input type="hidden" id="categoryForm_excludeCountry" name="categoryForm[excludeCountry]" value="{{ response.categoryDetail.excludeCountry | default('') }}">
+						<select name="categoryForm[excludeCountryList]" id="categoryForm_excludeCountryList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.excludeCountryList is defined and response.categoryDetail.excludeCountryList is not empty %}
+								{% for excludeCountry in response.categoryDetail.excludeCountryList %}
+									<option value="{{ excludeCountry.code }}">{{ excludeCountry.name }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group" style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_excludeCountryList', 'categoryForm_excludeCountry')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<select id="addExcludeCountry" name="addExcludeCountry"  class="form-control ng-pristine ng-valid ng-touched" placeholder="Select topic to add">
+							<option value="">Select country to exclude</option>
+							{% if response.countryList is defined and response.countryList is not empty %}
+								{% for country in response.countryList %}
+									<option value="{{ country.Code }}">{{ country.Name }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_excludeCountry', 'categoryForm_excludeCountryList', 'addExcludeCountry')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<hr>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Include Topic</label>
+						<input type="hidden" id="categoryForm_includeTopic" name="categoryForm[includeTopic]" value="{{ response.categoryDetail.includeTopic | default('') }}">
+						<select name="categoryForm[includeTopicList]" id="categoryForm_includeTopicList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.includeTopicList is defined and response.categoryDetail.includeTopicList is not empty %}
+								{% for spikeTopic in response.categoryDetail.includeTopicList %}
+									<option value="{{ spikeTopic.topicId }}">{{ spikeTopic.topic }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group" style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_includeTopicList', 'categoryForm_includeTopic')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<select id="addIncludeTopic" name="addIncludeTopic"  class="form-control ng-pristine ng-valid ng-touched" placeholder="Select topic to add">
+							<option value="">Select Topic to incude</option>
+							{% if response.spikeTopicList is defined and response.spikeTopicList is not empty %}
+								{% for spikeTopic in response.spikeTopicList %}
+									<option value="{{ spikeTopic.topicId }}">{{ spikeTopic.topic }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_includeTopic', 'categoryForm_includeTopicList', 'addIncludeTopic')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>Exclude Topic</label>
+						<input type="hidden" id="categoryForm_excludeTopic" name="categoryForm[excludeTopic]" value="{{ response.categoryDetail.excludeTopic | default('') }}">
+						<select name="categoryForm[excludeTopicList]" id="categoryForm_excludeTopicList" class="form-control ng-pristine ng-valid ng-touched db-list" multiple="multiple">
+							{% if response.categoryDetail.excludeTopicList is defined and response.categoryDetail.excludeTopicList is not empty %}
+								{% for spikeTopic in response.categoryDetail.excludeTopicList %}
+									<option value="{{ spikeTopic.topicId }}">{{ spikeTopic.topic }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+					</div>
+					<div class="input-group" style="padding-bottom: 10px;">
+						<button type="button" class="btn btn-danger btn-cons m-b-10 btn-sm" ng-click="removeFromList('categoryForm_excludeTopicList', 'categoryForm_excludeTopic')"><i class="fs-14 pg-close"></i>
+	                      <span class="bold">Delete selected</span>
+	                    </button>
+					</div>
+					<div class="input-group">
+						<select id="addExcludeTopic" name="addExcludeTopic"  class="form-control ng-pristine ng-valid ng-touched" placeholder="Select topic to add">
+							<option value="">Select Topic to exclude</option>
+							{% if response.spikeTopicList is defined and response.spikeTopicList is not empty %}
+								{% for spikeTopic in response.spikeTopicList %}
+									<option value="{{ spikeTopic.topicId }}">{{ spikeTopic.topic }}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+						<span class="input-group-btn"> 
+							<button type="button" class="btn btn-success" ng-click="addInList('categoryForm_excludeTopic', 'categoryForm_excludeTopicList', 'addExcludeTopic')">+</button> 
+						</span>
+					</div>	
+				</div>
+				<hr>
+				<div class="col-md-6" style="padding-top: 20px;">
+					<div class="form-group">
+						<label>User Status</label>
+						<select name="categoryForm[categoryStatus]" id="categoryForm_categoryStatus" class="form-control ng-pristine ng-valid ng-touched">
+							<option value="0" {% if '0' == response.categoryDetail.categoryStatus %} selected="selected" {% endif %}>Enable</option>
+							<option value="1" {% if '1' == response.categoryDetail.categoryStatus %} selected="selected" {% endif %}>Disable</option>	
+						</select>
+					</div>
+				</div>
+				<br>
+				<div class="col-md-6 col-md-offset-6" style="padding-top: 20px;">
+					<button type="submit" class="btn btn-primary btn-cons from-left">
+						<span>Save</span>
+					</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/angular-js/angular-route.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/postr/js/plugins/jasny/jasny-bootstrap.min.js') }}"></script>
+
+<script src="{{ asset('bundles/dbapp/app/js/BaseService.js?') }}{{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/dbapp/app/js/ManageCategoryController.js?') }}{{ "now"|date('YmdHisu') }}" type="text/javascript"></script>
+{% endblock %}

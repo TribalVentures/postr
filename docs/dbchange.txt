@@ -1,0 +1,143 @@
+24 Feb 2017
+
+ALTER DATABASE postr CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+ALTER TABLE trending_article CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-----------------------------------------------------------------------------
+20 Feb 2017
+
+ALTER TABLE  `account` ADD  `btPlanId` VARCHAR( 100 ) NULL AFTER  `btCardType` ;
+
+----------------------------------------------------------------------------------------------------
+2 Feb 2017
+#add last update field in social post 
+ALTER TABLE  `social_post` ADD  `lastUpdate` DATETIME NULL AFTER  `creationDate` ;
+
+UPDATE `social_post` SET `lastUpdate` = `creationDate`
+-----------------------------------------------------------------------------------------------------------------------
+
+31 Jan 2017
+#forgot to add SQL here
+
+CREATE TABLE IF NOT EXISTS `email_history` (
+  `emailHistoryId` bigint(15) unsigned NOT NULL AUTO_INCREMENT,
+  `accountId` bigint(10) unsigned DEFAULT '0',
+  `creationDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`emailHistoryId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+18 Jan 2017
+
+#add new table account parameter
+CREATE TABLE IF NOT EXISTS `account_param` (
+  `id` BIGINT(15) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `accountId` BIGINT(15) UNSIGNED NULL DEFAULT 0,
+  `discountCode` VARCHAR(100) NULL,
+  `sid` VARCHAR(100) NULL,
+  `lastUpdate` DATETIME NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+-----------------------------------------------------------------------------------------------------------------------
+
+13 Jan 2017
+#Setting keys
+INSERT INTO `setting` (`id`, `label`, `settingKey`, `settingValue`) VALUES
+(1, 'Notification Emails', 'NOTIFICATION_EMAIL', 'dipak14884@gmail.com, liomayer@gmail.com'),
+(2, 'Enable Notification', 'NOTIFICATION_ENABLE_NOTIFICATION', '1'),
+(3, 'Enable Signup Notification', 'NOTIFICATION_EMAIL_ENABLE_SIGNUP_NOTIFICATION', '0'),
+(4, 'Enbale singup complete notification', 'NOTIFICATION_EMAIL_ENABLE_SIGNUP_COMPLETE_NOTIFICATION', '1'),
+(5, 'Enable cancel account notification', 'NOTIFICATION_EMAIL_ENABLE_ACCOUNT_CANCEL', '0');
+
+#create table to keep leads
+CREATE TABLE IF NOT EXISTS `lead` (
+  `id` BIGINT(15) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `objectId` VARCHAR(50) NULL DEFAULT 0,
+  `company` VARCHAR(150) NULL,
+  `contactPerson` VARCHAR(150) NULL,
+  `phone` VARCHAR(40) NULL,
+  `email` VARCHAR(150) NULL,
+  `streetAddress` VARCHAR(100) NULL,
+  `locality` VARCHAR(100) NULL,
+  `region` VARCHAR(100) NULL,
+  `postalCode` VARCHAR(30) NULL,
+  `country` VARCHAR(45) NULL,
+  `url` VARCHAR(255) NULL,
+  `houzzUrl` VARCHAR(255) NULL,
+  `leadStatus` TINYINT(1) UNSIGNED NULL DEFAULT 0 COMMENT '0 - Scrap Basic, 1 - Scrap Done',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+-----------------------------------------------------------------------------------------------------------------------
+
+12 Jan 2017
+
+#Added new table to define settings
+CREATE TABLE IF NOT EXISTS `setting` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` VARCHAR(100) NULL,
+  `settingKey` VARCHAR(100) NULL,
+  `settingValue` TEXT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+10 Jan 2017
+
+ALTER TABLE  `article_notify_history` ADD  `accouuntId` INT( 10 ) UNSIGNED NULL DEFAULT  '0' AFTER  `articleNotifyHistoryId` ;
+
+#Above query, correct accountId field name
+ALTER TABLE  `article_notify_history` CHANGE  `accouuntId`  `accountId` INT( 10 ) UNSIGNED NULL DEFAULT  '0';
+-----------------------------------------------------------------------------------------------------------------------
+6 Jan 2017
+
+ALTER TABLE  `trending_article` ADD  `publicationDate` DATETIME NULL AFTER  `approveStatus` ;
+-----------------------------------------------------------------------------------------------------------------------
+5 Jab 2017
+ALTER TABLE  `user` ADD  `profile` VARCHAR( 255 ) NULL DEFAULT  '' AFTER  `password` ;
+
+-----------------------------------------------------------------------------------------------------------------------
+18 Dec 2016
+
+ALTER TABLE  `account` ADD  `btCreditCardNo` VARCHAR( 50 ) NULL DEFAULT NULL AFTER  `btCardtoken` ,
+ADD  `btExpirationDate` VARCHAR( 10 ) NULL DEFAULT NULL AFTER  `btCreditCardNo` ;
+
+ALTER TABLE  `account` ADD  `btCardType` VARCHAR( 50 ) NULL DEFAULT NULL AFTER  `btExpirationDate` ;
+
+ALTER TABLE  `account` ADD  `btSubscriptionId` VARCHAR( 100 ) NULL DEFAULT NULL AFTER  `btCardType` ;
+
+CREATE TABLE IF NOT EXISTS `transaction` (
+  `transactionId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `accountId` INT(10) UNSIGNED NULL DEFAULT 0,
+  `btTransactionId` VARCHAR(100) NULL,
+  `billingPeriod` VARCHAR(50) NULL,
+  `amount` DOUBLE(10,2) UNSIGNED NULL DEFAULT 0.00,
+  `transactionStatus` VARCHAR(45) NULL,
+  `creationDate` DATETIME NULL,
+  PRIMARY KEY (`transactionId`))
+ENGINE = InnoDB
+
+-----------------------------------------------------------------------------------------------------------------------
+
+15 Dec 2016 
+CREATE TABLE IF NOT EXISTS  `account_frequency` (
+ `accountFrequencyId` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
+ `accountId` INT( 10 ) UNSIGNED NULL DEFAULT 0,
+ `category` VARCHAR( 50 ) NULL DEFAULT  'Autopilot',
+ `frequency` VARCHAR( 10 ) NULL DEFAULT  '1111111',
+ `timezone` VARCHAR( 100 ) NULL ,
+PRIMARY KEY (  `accountFrequencyId` )
+) ENGINE = INNODB
+
+-----------------------------------------------------------------------------------------------------------------------
+20 Oct 2016 - Changes for approve status
+ALOct TABLE `trending_article` ADD `approveStatus` TINYINT( 1 ) UNSIGNED NULL DEFAULT '1' AFTER `trendingArticleStatus` ;
+-----------------------------------------------------------------------------------------------------------------------
+24 Sep 2016 - Changes for encrept password.
+ALTER TABLE `user` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULLDEFAULT NULL ;
+------------------------------------------------------------------------------------------------------------------------

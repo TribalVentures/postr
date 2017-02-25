@@ -1,0 +1,85 @@
+{% extends "::base.html.twig" %}
+{% block title %}InteriorPostr{% endblock %}
+{% block header %}
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{{ asset('bundles/dbapp/postr/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+    
+    {% block pageInStyle %}{% endblock %}
+    
+    <link href="{{ asset('bundles/dbapp/postr/css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/dbapp/postr/css/postr-styles.css') }}" rel="stylesheet">
+	{% block pageStyle %}{% endblock %}
+{% endblock %}
+
+{% block javascript %}
+	{% block pagesScript %}{% endblock %}
+{% endblock %}
+
+{% block body_attr %}class="top-navigation"{% block anguler %}{% endblock %}{% endblock %}
+
+{% block body %}
+<div id="wrapper">
+	<div id="page-wrapper" class="gray-bg">
+		<div class="row border-bottom">
+			<nav class="navbar navbar-static-top" role="navigation">
+				<div class="navbar-header">
+					<button aria-controls="navbar" aria-expanded="false"
+						data-target="#navbar" data-toggle="collapse"
+						class="navbar-toggle collapsed" type="button">
+						<i class="fa fa-reorder"></i>
+					</button>
+					<a href="#" class="navbar-brand">Interior Postr</a>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar">
+					<ul class="nav navbar-top-links navbar-right">
+						<li><a href="{{ path('db_postreach_logout') }}"> <i class="fa fa-sign-out"></i> Log out
+						</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		{% block stepHeader %}
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-md-12 text-center">
+					{% block stepHeaderContainer %}
+					{% endblock %}
+				</div>
+			</div>
+		{% endblock %}
+		<div class="wrapper wrapper-content">
+			{% block container %}
+			{% endblock %}
+		</div>
+		<div class="footer">
+			<div class="pull-right">
+				Happy <strong>Sharing</strong>!
+			</div>
+			<div>
+				<strong>Copyright</strong> Interior Postr &copy; 2017
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block bodyOut %}
+	<!-- Mainly scripts -->
+    <script src="{{ asset('bundles/dbapp/postr/js/jquery-2.1.1.js') }}"></script>
+    <script src="{{ asset('bundles/dbapp/postr/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{{ asset('bundles/dbapp/postr/js/inspinia.js') }}"></script>
+    <script src="{{ asset('bundles/dbapp/postr/js/plugins/pace/pace.min.js') }}"></script>
+    {% block bodyOutPagesScript %}{% endblock %}
+{% endblock %}
+
+{% block bodyCommon %}
+{% endblock %}

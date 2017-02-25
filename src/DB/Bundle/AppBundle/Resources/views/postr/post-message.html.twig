@@ -1,0 +1,58 @@
+{% extends 'DBAppBundle::baseAdminLayout.html.twig' %}
+
+{% block body_attr %} class="gray-bg"{% block anguler %}{% endblock %}{% endblock %}
+
+{% block body %}
+<div class="middle-box text-center  animated fadeInDown" style="max-width: 600px;">
+	<div>
+		<div>
+			<h2 class="logo-name">
+				<img src="{{ asset('bundles/dbapp/postr/img/postr-logo.png') }}" />
+			</h2>
+		</div>
+		<h3>Welcome to Postr</h3>
+		<div class="ibox">
+			<div class="ibox-title">
+		    	<h5>Recommended Articles Post</h5>                        
+			</div>
+			<div class="ibox-content">
+				<div class="row well">
+					<div class="col-md-4">
+						<img class="img-responsive" src="{{ response.trendingArticleCategoryDetail.image }}" />
+					</div>
+					<div class="col-md-8 text-left">
+						<h3>{{ response.trendingArticleCategoryDetail.title }}</h3>
+						<h5>
+							<a href="#">{{ response.trendingArticleCategoryDetail.domain }}</a>
+						</h5>
+						<p class="text-left">{{ response.trendingArticleCategoryDetail.description }}</p>
+					</div>
+				</div>
+				
+				{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.facebookPostId > 0 %}
+					<div class="row">
+						<p class="posted-actions">
+							<a class="btn btn-sm btn-success" target="_blank" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><i class="fa fa-facebook"> </i>  View Post </iclass="fa></a> 
+						
+							{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId > 0 %}
+								<a class="btn btn-sm btn-info" target="_blank" href="https://twitter.com"><i class="fa fa-twitter"> </i> View Post </iclass="fa></a> 
+							{% endif %}
+						</p>
+					</div>
+				{% endif %}
+				
+				
+				{% if response.error is defined and response.error is not empty %}
+					<div class="alert alert-danger">{{ response.error }}</div>
+				{% endif %}
+				{% if response.message is defined and response.message is not empty %}
+					<div class="alert alert-success">{{ response.message }}</div>
+				{% endif %}
+			</div>
+		</div>
+		<p class="m-t">
+			<small>Copyright &copy; 2017. All rights reserved.</small>
+		</p>
+	</div>
+</div>
+{% endblock %}

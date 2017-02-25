@@ -1,0 +1,33 @@
+#primo:email cron to collect Morning articles run after each 15 minutes
+#0,15,30,45 0-12 * * * cd /opt/tribal/src/postreach && php app/console primo:email 80 morning --prod --ArticleOnly >> /opt/tribal/src/postreach/app/logs/primo_email_morning_ArticleOnly.`date +\%Y\%m\%d`.log
+
+#primo:email cron to collect Afternoon articles run after each 15 minutes
+#0,15,30,45 13-17 * * * cd /opt/tribal/src/postreach && php app/console primo:email 80 afternoon --prod --ArticleOnly >> /opt/tribal/src/postreach/app/logs/primo_email_afternoon_ArticleOnly.`date +\%Y\%m\%d`.log
+
+#primo:email cron to collect Morning articles run after each 15 minutes
+#0,15,30,45 18-23 * * * cd /opt/tribal/src/postreach && php app/console primo:email 80 evaning --prod --ArticleOnly >> /opt/tribal/src/postreach/app/logs/primo_email_evaning_ArticleOnly.`date +\%Y\%m\%d`.log
+
+#primo:email cron to process email to send in newsletter at moring 9:00 AM
+#0 9 * * * cd /opt/tribal/src/postreach && php app/console primo:email 80 morning --prod >> /opt/tribal/src/postreach/app/logs/primo_email_process.`date +\%Y\%m\%d`.log
+
+#primo:email cron to send email and massenger notification moring 10:00 AM
+#0 10 * * * cd /opt/tribal/src/postreach && php app/console primo:email 80 morning --prod --SendEmail >> /opt/tribal/src/postreach/app/logs/primo_email_sendmail.`date +\%Y\%m\%d`.log
+
+#primo:signup-email cron to sedn newsletter to all new registered users. Run after each 10 minutes
+#*/10 * * * * cd /opt/tribal/src/postreach && php app/console primo:signup-email --prod >> /opt/tribal/src/postreach/app/logs/primo_signup_newsletter.`date +\%Y\%m\%d`.log
+
+
+#primo:facebook cron to fetch facebook social for post and put in DB Run after each 25 minutes
+#*/25 * * * * cd /opt/tribal/src/postreach && php app/console primo:facebook >> /opt/tribal/src/postreach/app/logs/primo_facebook_insight.`date +\%Y\%m\%d`.log
+
+#primo:email cron to collect Morning articles run after each 15 minutes
+*/15 * * * * cd /opt/tribal/src/postreach && php app/console primo:notification 80 --prod --ArticleOnly >> /opt/tribal/src/postreach/app/logs/primo_notification_ArticleOnly.`date +\%Y\%m\%d`.log
+
+#primo:email cron to send email notification each 10 minutes
+*/10 * * * * cd /opt/tribal/src/postreach && php app/console primo:notification 80 --prod --SendNotification >> /opt/tribal/src/postreach/app/logs/primo_notification_SendNotification.`date +\%Y\%m\%d`.log
+
+#primo:email cron to autopost article after each 10 minutes
+*/10 * * * * cd /opt/tribal/src/postreach && php app/console primo:notification 80 --prod --AutoPost >> /opt/tribal/src/postreach/app/logs/primo_notification_AutoPost.`date +\%Y\%m\%d`.log
+
+#postr:facebook cron to fetch facebook social and update in DB
+*/5 * * * * cd /opt/tribal/src/postreach && php app/console postr:facebook >> /opt/tribal/src/postreach/app/logs/postr_facebook.`date +\%Y\%m\%d`.log

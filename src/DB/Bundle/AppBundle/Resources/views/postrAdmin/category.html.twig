@@ -1,0 +1,170 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block containerHeader %}
+	<h2>Category</h2>
+{% endblock %}
+
+{% block pageAction %}
+{% endblock %}
+
+{% block container %}
+<div class="row">
+	<div class="col-md-8">
+		<div class="ibox">
+			<div class="ibox-title">
+				<form id="categoryListForm" name="categoryForm" action="{{ path('db_postreach_admin_category') }}" method="post" role="form">
+					<input type="hidden" id="categoryForm_currentPage" name="categoryForm[currentPage]" value="{{ response.categoryListForm.currentPage | default('1') }}"/>
+					<select id="categoryListForm_parentCategoryId" name="categoryForm[parentCategoryId]" class="form-control" id="usertype">
+	    				{% if response.userTypeList is defined and response.userTypeList is not empty  %}
+							{% for category in response.userTypeList %}
+								<option value="{{ category.categoryId }}" {% if response.categoryListForm.parentCategoryId | default('0') == category.categoryId %} selected="selected"" {% endif %}>{{ category.category }}</option>
+							{% endfor %}
+						{% endif %}	
+	    			</select>
+			  	</form>
+				<div class="ibox-tools">
+				</div>
+			</div>
+			<div class="ibox-content table-responsive" style="min-height: 200px;">
+				<table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+					<thead>
+						<tr>
+							<th>Conf #</th>
+							<th>Image</th>
+							<th>Category</th>
+							<th style="text-align: right;">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if response.categoryList.LIST is defined and response.categoryList.LIST is not empty  %}
+							{% for category in response.categoryList.LIST %}
+								<tr>
+									<td>#{{ category.categoryId }}</td>
+									<td>
+										{% if category.image is not empty %}
+											<img alt="{{ category.category }}" src="{{ asset(category.image) }}" width="60px">
+										{% else %}
+											<img alt="{{ category.category }}" src="https://www.pgeveryday.com/LayoutAssets/Core/Images/image-preview-default.jpg" width="60px;"/>
+										{% endif %}
+										
+									</td>
+									<td>{{ category.category }}</td>
+									<td style="text-align: right;">
+										<a href="{{ path('db_postreach_admin_view_category', {'categoryId': category.categoryId}) }}" class="btn btn-sm btn-primary">Edit</a>
+										<button type="button" class="btn btn-sm btn-danger">Delete</button>
+									</td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+				</table>
+				
+				{% if response.categoryList.PAGING is defined and response.categoryList.PAGING is not empty  %}
+					<div align="center">
+						<ul class="pagination">
+							{% if response.categoryList.PAGING.PREV_PAGE is defined and response.categoryList.PAGING.PREV_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.categoryList.PAGING.PREV_PAGE }}');">Previous</a>
+								</li>
+							{% else %}
+								<li class="paginate_button previous disabled">
+									<a href="#">Previous</a>
+								</li>
+							{% endif %}
+							
+							{% if response.categoryList.PAGING.PAGE_NUMBERS is defined and response.categoryList.PAGING.PAGE_NUMBERS is not empty  %}
+								{% for page in response.categoryList.PAGING.PAGE_NUMBERS %}
+									{% if page == response.categoryList.PAGING.CURRENT_PAGE %}
+										<li class="paginate_button active">
+											<a href="javascript: void(0);">{{ page }}</a>
+										</li>
+									{% else %}
+										<li class="paginate_button">
+											<a href="javascript: submitPage('{{ page }}');">{{ page }}</a>
+										</li>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+							
+							{% if response.categoryList.PAGING.NEXT_PAGE is defined and response.categoryList.PAGING.NEXT_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.categoryList.PAGING.NEXT_PAGE }}');">Next</a>
+								</li>
+							{% else %}
+								<li class="paginate_button next disabled">
+									<a href="#">Next</a>
+								</li>
+							{% endif %}
+						</ul>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="ibox collapsed">
+			<div class="ibox-title">
+				<h5>Add User Type</h5>
+				<div class="ibox-tools">
+					<a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
+				</div>
+			</div>
+			<div class="ibox-content">
+				<form id="userTypeForm" name="categoryForm" action="{{ path('db_postreach_admin_addcategory') }}" method="post" role="form">
+			  		<div class="form-group">
+			    		<label for="category">User Type:</label>
+			    		<input type="text" class="form-control" name="categoryForm[category]" id="category">
+			  		</div>
+			  		<input type="submit" class="btn btn-primary" value="Save">
+			  	</form>
+			</div>
+		</div>
+		
+		<div class="ibox">
+			<div class="ibox-title">
+				<h5>Add Category</h5>
+				<div class="ibox-tools">
+					<a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
+				</div>
+			</div>
+			<div class="ibox-content">
+				<form id="categoryForm" name="categoryForm" action="{{ path('db_postreach_admin_addcategory') }}" method="post" role="form">
+    				<div class="form-group">
+    					<label for="usertype">User Type:</label>
+    					<select name="categoryForm[parentCategoryId]" class="form-control" id="usertype">
+    						{% if response.userTypeList is defined and response.userTypeList is not empty  %}
+								{% for category in response.userTypeList %}
+									<option value="{{ category.categoryId }}">{{ category.category }}</option>
+								{% endfor %}
+							{% endif %}	
+    					</select>
+			  		</div>
+			  		<div class="form-group">
+			    		<label for="category">Category:</label>
+			    		<input type="text" class="form-control" name="categoryForm[category]" id="category">
+			  		</div>
+			  		<input type="submit" class="btn btn-primary" value="Save">
+			  	</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script>
+	$(document).ready(function(){
+		$('#categoryListForm_parentCategoryId').on('change', function(){
+			submitPage(1);
+		});
+    });
+	function submitPage(currentPage = -1) {
+		if(currentPage > 0) {
+			$('#categoryForm_currentPage').val(currentPage);
+		}
+		
+		$('#categoryListForm').submit();
+	}
+</script>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'DBAppBundle::baseLayout.html.twig' %}
+
+{% block containerHeader %}
+	<h2>Account</h2>
+{% endblock %}
+
+{% block pageAction %}
+{% endblock %}
+
+{% block container %}
+<div class="alert alert-danger alert-message" style="display: none;"></div>
+<div class="ibox-content m-b-sm border-bottom">
+	<div class="row">
+		<form id="accountForm" name="accountForm" action="{{ path('db_postreach_admin_account') }}" method="post">
+			<input type="hidden" id="accountForm_currentPage" name="accountForm[currentPage]" value="{{ response.accountForm.currentPage | default('1') }}" />
+			<div class="col-sm-4">
+				<div class="form-group">
+					<input id="accountForm_search" name="accountForm[search]" class="form-control" type="text" value="{{ response.accountForm.search | default('') }}" placeholder="Search here"> 		
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-group">
+					<select id="accountForm_accountStatus" name="accountForm[accountStatus]" class="form-control">
+	    				<option value="">--All Categories--</option>
+	    				<optgroup label="Custom Criteria">
+	    					<option value="<3">Signup and Confirm Email Send</option>
+	    					<option value="<7">Not Signup Completed</option>
+	    					<option value="!8">All Exclude Cancel</option>
+	    				</optgroup>
+	    				<optgroup label="Defined Status">
+							<option value="0">Just Signup</option>
+							<option value="1">User Created</option>
+							<option value="2">Confirmation Send</option>
+							<option value="3">Confirmed</option>
+							<option value="4">Toppic Setup</option>
+							<option value="5">Platform Setup</option>
+							<option value="6">Frequency Setup</option>
+							<option value="7">Completed</span>
+							<option value="8">Canceled</option>
+						</optgroup>
+	    			</select>
+				</div>
+			</div>
+			<div class="col-sm-3">
+				<div class="form-group">
+	    			<button type="button" class="btn btn-primary" id="accountForm-search-btn" >Search!</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="ibox">
+			<div class="ibox-content table-responsive" style="min-height: 200px;">
+				<table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+					<thead>
+						<tr>
+							<th>#ID-Braintree ID</th>
+							<th>Account Name</th>
+							<th>Email</th>
+							<th>Card (Expiration)</th>
+							<th>Subscription</th>
+							<th>Status</th>
+							<th style="text-align: right; white-space: nowrap;">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if response.accountList.LIST is defined and response.accountList.LIST is not empty  %}
+							{% for account in response.accountList.LIST %}
+								<tr>
+									<td>#{{ account.accountId }}- {{ account.btCustomerId | default ('NA') }}</td>
+									<td>{{ account.account }}</td>
+									<td>{{ account.email }}</td>
+									<td>
+										{% if account.btCreditCardNo is not empty %}
+											{{ account.btCreditCardNo }} ({{ account.btExpirationDate }})
+										{% else %}
+											NA
+										{% endif %}
+									</td>
+									<td>
+										{% if account.btSubscriptionId is not empty %}
+											{{ account.btSubscriptionId }})
+										{% else %}
+											NA
+										{% endif %}
+									</td>
+									<td>
+										{% if account.accountStatus < 2 %}
+											<span class="label">Just Signup</span>
+										{% elseif account.accountStatus == 2 %}
+											<span class="label label-warning">Confirmation Send</span>
+										{% elseif account.accountStatus == 3 %}
+											<span class="label label-warning">Confirmed</span>
+										{% elseif account.accountStatus == 4 %}
+											<span class="label label-warning">Toppic Setup</span>
+										{% elseif account.accountStatus == 5 %}
+											<span class="label label-warning">Platform Setup</span>
+										{% elseif account.accountStatus == 6 %}
+											<span class="label label-warning">Frequency Setup</span>
+										{% elseif account.accountStatus == 7 %}
+											<span class="label label-primary">Completed</span>
+										{% elseif account.accountStatus == 8 %}
+											<span class="label label-danger">Canceled</span>
+										{% endif %}
+									</td>
+									<td style="text-align: right; white-space: nowrap;">
+										<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="{{ account.accountId }}"><i class="fa fa-times"></i></button>
+									</td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+					</tbody>
+				</table>
+				{% if response.accountList.PAGING is defined and response.accountList.PAGING is not empty  %}
+					<div align="center">
+						<ul class="pagination">
+							{% if response.accountList.PAGING.PREV_PAGE is defined and response.accountList.PAGING.PREV_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.accountList.PAGING.PREV_PAGE }}');">Previous</a>
+								</li>
+							{% else %}
+								<li class="paginate_button previous disabled">
+									<a href="#">Previous</a>
+								</li>
+							{% endif %}
+							
+							{% if response.accountList.PAGING.PAGE_NUMBERS is defined and response.accountList.PAGING.PAGE_NUMBERS is not empty  %}
+								{% for page in response.accountList.PAGING.PAGE_NUMBERS %}
+									{% if page == response.accountList.PAGING.CURRENT_PAGE %}
+										<li class="paginate_button active">
+											<a href="javascript: void(0);">{{ page }}</a>
+										</li>
+									{% else %}
+										<li class="paginate_button">
+											<a href="javascript: submitPage('{{ page }}');">{{ page }}</a>
+										</li>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+							
+							{% if response.accountList.PAGING.NEXT_PAGE is defined and response.accountList.PAGING.NEXT_PAGE is not empty  %}
+								<li class="paginate_button previous">
+									<a href="javascript: submitPage('{{ response.accountList.PAGING.NEXT_PAGE }}');">Next</a>
+								</li>
+							{% else %}
+								<li class="paginate_button next disabled">
+									<a href="#">Next</a>
+								</li>
+							{% endif %}
+						</ul>
+					</div>
+				{% endif %}
+			</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block bodyOutPopup %}
+{% endblock %}
+
+{% block bodyOutPagesScript %}
+<script>
+	$(document).ready(function(){
+		$('#accountForm-search-btn').on('click', function() {
+			submitPage(1);
+		});
+
+		$('.btn-delete').on('click', function() {
+			var id = $(this).attr('data-id');
+
+			$.post('{{ path('db_postreach_admin_account_cancel') }}', 
+				{'id':id},
+				function(data) {
+					if(data.response.error) {
+		        		window.location.href = data.response.error.action;
+			    	} else {
+				    	if(data.response.errorMessage) {
+				    		showAlert(data.response.errorMessage, 'danger');
+					    }
+
+					    if(data.response.message) {
+					    	showAlert(data.response.message, 'success');
+						}
+
+						if(data.response.id) {
+							$('button[data-id="' + data.response.id + '"]').closest('tr').remove();
+						}			
+				    }
+				}
+			);
+		});
+
+		//Set default status
+		$('#accountForm_accountStatus').val('{{ response.accountForm.accountStatus | default('!8') | raw }}');
+    });
+
+	function showAlert(message, type) {
+		$('.alert-message').removeClass('alert-danger').removeClass('alert-success').addClass('alert-' + type).text(message).show();
+		setTimeout(function(){
+			$('.alert-message').hide();
+		}, 5000);
+	}
+	
+	function submitPage(currentPage = -1) {
+		if(currentPage > 0) {
+			$('#accountForm_currentPage').val(currentPage);
+		}
+		
+		$('#accountForm').submit();
+	}
+</script>
+{% endblock %}
