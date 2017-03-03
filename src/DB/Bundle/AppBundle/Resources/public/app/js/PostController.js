@@ -116,6 +116,11 @@ poll.controller('PostController', function($scope, $http, $location, dbLoader, $
 		}
 		
 		dbLoader.showLoader();
+		
+		$timeout(function() {
+			$("#shareModal").modal('hide');
+    	}, 500);
+		
 		var url = $('#base-path').attr('data-url') + 'share-post';
 		var httpRequest = $http({
             method: 'POST',
@@ -130,10 +135,10 @@ poll.controller('PostController', function($scope, $http, $location, dbLoader, $
 	    		}
 	    	}
         	dbLoader.hideLoader();
+        }).error(function (error, status) {
+        	dbLoader.hideLoader();
+        	$scope.removeArticle($scope.trendingArticleId);
         });
-		$timeout(function() {	    				
-			$("#shareModal").modal('hide');
-    	}, 500);
 	}
 	
 	$scope.hideArticle = function(articleDetail) {
