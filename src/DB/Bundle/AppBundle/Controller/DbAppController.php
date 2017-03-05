@@ -154,7 +154,7 @@ class DbAppController extends BaseController {
     	if(!empty($parameter)) {
     		$returnURL = $returnURL . '?' . $parameter;
     	}
-    	$permissions = ['email', 'manage_pages', /*'publish_actions',*/ 'read_insights', 'publish_pages']; // optional
+    	$permissions = ['email', 'manage_pages', 'publish_actions', 'read_insights', 'publish_pages']; // optional
     	return $helper->getLoginUrl($returnURL, $permissions);
     }
 	
