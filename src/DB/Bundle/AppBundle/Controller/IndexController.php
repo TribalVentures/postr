@@ -351,8 +351,11 @@ class IndexController extends DbAppController {
 			unset($userDetail['password']);
 				
 			if($userDetail['userStatus'] == UserDAO::USER_STATUS_INACTIVE) {
-				//Set account as confirm the email
-				$userDAO->update(new User(), array('userId'=>$userDetail['userId'], 'userStatus'=>UserDAO::USER_STATUS_ACTIVE));
+                //Set account as confirm the email
+                $user = new User();
+                $user->setUserId($userDetail['userId']);
+                $userDAO->update($user, array('userStatus'=>UserDAO::USER_STATUS_ACTIVE));
+				//$userDAO->update(new User(), array('userId'=>$userDetail['userId'], 'userStatus'=>UserDAO::USER_STATUS_ACTIVE));
 				//Set account status status to send confirmation email
 				$accountDAO = new AccountDAO($this->getDoctrine());
 				$accountDAO->setAccountStatus($userDetail['accountId'], AccountDAO::ACCOUNT_STATUS_CONFIRM_DONE);
