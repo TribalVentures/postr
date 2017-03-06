@@ -28,7 +28,7 @@ class IndexController extends DbAppController {
 	public function indexAction() {
 		$n = $this->getRequestParam('n', '');
 		if(!empty($n) && $n == 'ca') {
-			$this->addInResponse('error', 'Your account calcel successfully..');
+			$this->addInResponse('error', 'Your account cancel successfully..');
 		}
 		
 		return $this->getResponse();
@@ -59,7 +59,7 @@ class IndexController extends DbAppController {
 			$accountDAO = new AccountDAO($this->getDoctrine());
 			$userDetail['account'] = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$userDetail['accountId']));
 			
-			//check for account calcel
+			//check for account cancel
 			if(!empty($userDetail['account']['accountStatus']) && $userDetail['account']['accountStatus'] == AccountDAO::ACCOUNT_STATUS_CANCEL) {
 				$errorMesage = 'Your account no more active, Please contact to POSTR team to activate..';
 				$this->addInResponse('error', $errorMesage);

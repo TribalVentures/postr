@@ -78,7 +78,7 @@
 														{% set setting = response.settingMap[constant('DB\\Bundle\\AppBundle\\DAO\\SettingDAO::SETTING_KEY_NOTIFICATION_EMAIL_ENABLE_ACCOUNT_CANCEL')] %}
 														<div>
 															<label>
-																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable calcel account notification
+																<input name="settingForm[{{setting.settingKey | default('') }}]" value="1" type="checkbox" {% if setting.settingValue == '1' %} checked="checked" {% endif %} class="i-checks"> &nbsp;Enable cancel account notification
 															</label>
 														</div>
 													{% endif %}
