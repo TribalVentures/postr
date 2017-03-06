@@ -6,6 +6,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Braintree\WebhookNotification;
 use DB\Bundle\AppBundle\DAO\AccountDAO;
 use DB\Bundle\AppBundle\Entity\Account;
+use DB\Bundle\CommonBundle\ApiClient\DBBraintreeClient;
+use DB\Bundle\AppBundle\Common\Config;
 
 class WebhookNotificationController extends DbAppController {
 	/**
@@ -17,7 +19,11 @@ class WebhookNotificationController extends DbAppController {
 		
 		$response = array('status'=>false, 'message'=>'Problem while cancel subscription');
 		if(!empty($signature) && isset($payload)) {
-	    	$webhookNotification = WebhookNotification::parse($signature, $payload);
+			$dbBraintreeClient = new DBBraintreeClient(Config::getSParameter('BRAINTREE_ENVIRONMENT'),
+				Config::getSParameter('BRAINTREE_MERCHANT_ID'), Config::getSParameter('BRAINTREE_PUBLIC_KEY'),
+				Config::getSParameter('BRAINTREE_PRIVATE_KEY'));
+		
+			$webhookNotification = $dbBraintreeClient->webhookNotificationDecode($signature, $payload);
 			
 	    	if($webhookNotification->kind == WebhookNotification::SUBSCRIPTION_CANCELED) {
 	    		if(isset($webhookNotification->subscription->id)) {
