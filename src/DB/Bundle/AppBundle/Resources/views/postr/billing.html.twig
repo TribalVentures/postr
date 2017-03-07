@@ -38,6 +38,14 @@
 									</td>
 								</tr>
 							{% endfor %}
+						{% else %}
+							<tr>
+								<td colspan="4">
+									<div class="alert alert-warning">
+		                                Transaction data not found
+		                            </div>
+								</td>
+							</tr>
 						{% endif %}
 					</tbody>
 				</table>
@@ -65,7 +73,7 @@
 				<h2>{{ response.accountDetail.btCreditCardNo }}</h2>
 				<div class="row">
 					<div class="col-sm-6">
-						<small> <strong>Expiry date:</strong> {{ response.accountDetail.btExpirationDate }}</small>
+						<small> <strong>Expiry date:</strong> {{ response.accountDetail.btExpirationDate | default('-') }}</small>
 					</div>
 					<div class="col-sm-6 text-right">
 						<small> <strong>Name:</strong> {{ response.accountDetail.account }}</small>
