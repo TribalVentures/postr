@@ -26,7 +26,7 @@ class DBSendgridClient {
 			$email = new Email();
 			
 			$email
-			->addTo('patildipakr@gmail.com')
+			->addTo($emailDetail['to'])
 			->setFrom($emailDetail['from'])
 			->setSubject($emailDetail['subject'])
 			->addHeader('Content-Type', 'html/text')
