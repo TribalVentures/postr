@@ -478,13 +478,17 @@ class DbAppController extends BaseController {
 		$sid = $this->getRequestParam('sid', '');
 		if(empty($sid)) {
 			$sid = $this->getCookie(Config::COOKIE_KEY_SID);
+			if(empty($sid)) {
+				$sid = $this->getSession("" . Config::COOKIE_KEY_SID);
+			}
 		} else {
+			$this->setCookie(Config::COOKIE_KEY_SID, $sid);
+			$this->setSession(Config::COOKIE_KEY_SID, $sid);
+			
 			$isRedirect= true;
 		}
 		
 		if(!empty($sid)) {
-			$this->setCookie(Config::COOKIE_KEY_SID, $sid);
-			
 			//Add sid in respnse
 			$this->addInResponse('sid', $sid);
 		}
@@ -492,13 +496,17 @@ class DbAppController extends BaseController {
 		$discountCoupon = $this->getRequestParam('dc', '');
 		if(empty($discountCoupon)) {
 			$discountCoupon = $this->getCookie(Config::COOKIE_KEY_DISCOUNT_COUPON);
+			if(empty($discountCoupon)) {
+				$discountCoupon = $this->getSession(Config::COOKIE_KEY_SID);
+			}
 		} else {
+			$this->setCookie(Config::COOKIE_KEY_DISCOUNT_COUPON, $discountCoupon);
+			$this->setSession(Config::COOKIE_KEY_DISCOUNT_COUPON, $discountCoupon);
+			
 			$isRedirect= true;
 		}
 		
 		if(!empty($discountCoupon)) {
-			$this->setCookie(Config::COOKIE_KEY_DISCOUNT_COUPON, $discountCoupon);
-			
 			//Add sid in respnse
 			$this->addInResponse('discountCoupon', $discountCoupon);
 		}
@@ -510,25 +518,39 @@ class DbAppController extends BaseController {
 	 * This function handle account parameters in DB
 	 */
 	public function handleAccountParam() {
-		$isValid = $this->isValidUserRequest();
+		/*$isValid = $this->isValidUserRequest();
 		if(!empty($isValid['nextRoute'])) {
 			return false;
-		}
+		}*/
 		
 		$accountParam = array();
 		
 		$sid = $this->getCookie(Config::COOKIE_KEY_SID);
 		if(!empty($sid)) {
-			$this->removeCookie(Config::COOKIE_KEY_SID);
 			$accountParam['sid'] = $sid;
+		} else {
+			$sid = $this->getSession(Config::COOKIE_KEY_SID);
+			if(!empty($sid)) {
+				$accountParam['sid'] = $sid;
+			}
 		}
+		
+		$this->removeCookie(Config::COOKIE_KEY_SID);
+		$this->removeSession(Config::COOKIE_KEY_SID);
 		
 		$discountCode = $this->getCookie(Config::COOKIE_KEY_DISCOUNT_COUPON);
 		if(!empty($sid)) {
-			$this->removeCookie(Config::COOKIE_KEY_DISCOUNT_COUPON);
 			$accountParam['discountCode'] = $discountCode;
+		} else {
+			$discountCode = $this->getSession(Config::COOKIE_KEY_DISCOUNT_COUPON);
+			if(!empty($sid)) {
+				$accountParam['discountCode'] = $discountCode;
+			}
 		}
-		print_r($accountParam);
+		
+		$this->removeCookie(Config::COOKIE_KEY_DISCOUNT_COUPON);
+		$this->removeSession(Config::COOKIE_KEY_DISCOUNT_COUPON);
+		
 		if(!empty($accountParam)) {
 			$currentUser = $this->getUser();
 			$accountParam['accountId'] = $currentUser['accountId'];

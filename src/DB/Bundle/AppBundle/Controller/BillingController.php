@@ -22,7 +22,6 @@ class BillingController extends DbAppController {
 		}
 		
 		$currentUser = $this->getUser();
-		
 		//Get customer billing detail
 		if(!empty($currentUser['account'])) {
 			$this->addInResponse('accountDetail', $currentUser['account']);
@@ -42,16 +41,23 @@ class BillingController extends DbAppController {
 		$this->addInResponse('clientToken', $clientToken);
 		
 		//Get plan detail
+		$isPlanNotExist = false;
 		if(!isset($currentUser['planDetail'])) {
-			//Get account detail
-			$planDetail = $dbBraintreeClient->getPlan(Config::getSParameter('BRAINTREE_PLAN_ID'));
+			//Get plan detail from account
+			$planId = Config::getSParameter('BRAINTREE_PLAN_ID');
+			if(!empty($currentUser['account']['btPlanId'])) {
+				$planId = $currentUser['account']['btPlanId'];
+			} else {
+				$isPlanNotExist = true;
+			}
+			
+			$planDetail = $dbBraintreeClient->getPlan($planId);
 			if(!empty($planDetail['id'])) {
 				$currentUser['planDetail'] = $planDetail;
 			}
 		
 			$this->setUser($currentUser);
 		}
-		
 		
 		if(!isset($currentUser['transactionList']) && !empty($currentUser['account']['btCustomerId'])) {
 			//Get account detail
@@ -67,11 +73,17 @@ class BillingController extends DbAppController {
 			$subscription = $dbBraintreeClient->findSubscription($currentUser['account']['btSubscriptionId']);
 			if(empty($subscription['error'])) {
 				$currentUser['subscription'] = $subscription;
+				
+				//Update current planId into DB
+				if($isPlanNotExist && !empty($subscription['planId'])) {
+					$currentUser['account']['btPlanId'] = $subscription['planId'];
+					$accountDAO = new AccountDAO($this->getDoctrine());
+					$accountDAO->update((new Account())->setAccountId($currentUser['account']['accountId']), array('btPlanId'=>$subscription['planId']));
+				}
 			}
-		
+			
 			$this->setUser($currentUser);
 		}
-		
 		
 		if(isset($currentUser['transactionList'])) {
 			$this->addInResponse('transactionList', $currentUser['transactionList']);
