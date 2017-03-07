@@ -61,7 +61,7 @@ class IndexController extends DbAppController {
 			
 			//check for account cancel
 			if(!empty($userDetail['account']['accountStatus']) && $userDetail['account']['accountStatus'] == AccountDAO::ACCOUNT_STATUS_CANCEL) {
-				$errorMesage = 'Your account no more active, Please contact to POSTR team to activate..';
+				$errorMesage = 'Your account is no longer active. Please contact the InteriorPostr team to reactivate.';
 				$this->addInResponse('error', $errorMesage);
 				return $this->getResponse();
 			}
@@ -212,7 +212,11 @@ class IndexController extends DbAppController {
 			$planId = $this->getRequestParam('pp', '');
 			if(!empty($planId)) {
 				$accountForm['btPlanId'] = $planId;
+			} else {
+				$accountForm['btPlanId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
 			}
+			
+			$this->removeSession('pp');
 			
 			if(empty($accountForm['account']) || empty($accountForm['email']) || empty($accountForm['password'])) {
 				$this->addInResponse('error', 'Please enter all required detail');
@@ -254,7 +258,7 @@ class IndexController extends DbAppController {
 					
 					//Send notification to internal team
 					$this->sendRegistrationNotification($userDetail);
-					
+
 					return $this->sendRequest('db_postreach_register_confirm_account');
 				} else {
 					$this->addInResponse('error', 'Problem while creating the accont');
@@ -844,7 +848,7 @@ class IndexController extends DbAppController {
 		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
-		$emailDetail['subject'] = 'POSTR: Forgot your password, Instruction to reset your password';
+		$emailDetail['subject'] = 'InteriorPostr: Forgot your password, Instruction to reset your password';
 	
 		$emailDetail['body'] = $html;
 	

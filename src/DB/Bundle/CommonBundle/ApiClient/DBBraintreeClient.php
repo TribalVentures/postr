@@ -12,6 +12,7 @@ use Braintree\PaymentMethodNonce;
 use Braintree\PaymentMethod;
 use DB\Bundle\CommonBundle\Util\DBUtil;
 use Braintree\TransactionSearch;
+use Braintree\Exception\NotFound;
 /**
  * This class is call braintree API and return response as it is
  * @author patildipakr
@@ -426,6 +427,8 @@ class DBBraintreeClient {
 				$subscription['status'] = $result->status;
 				$subscription['nextBillingDate'] = DBUtil::format($result->nextBillingDate, 'M d, Y');
 			}
+		} catch (NotFound $e) {
+  			$subscription['error'] = $e->getMessage();
 		} catch(Exception $e) {
 			$subscription['error'] = $e->getMessage();
 		}
