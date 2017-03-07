@@ -20,5 +20,6 @@
 /web/uploads/logo/*
 /web/uploads/poll/*
 /docs/backup/*
-/docs/config.json
+docs/config.json
+src/config.json
 .DS_Store

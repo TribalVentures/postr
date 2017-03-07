@@ -28,10 +28,9 @@ class AccountParamDAO extends BaseDAO {
 	 * @return boolean
 	 */
 	public function addAccountParam($accountParamDetail = array()) {
-		if(empty($accountParamDetail)) {
+		if(empty($accountParamDetail) || empty($accountParamDetail['accountId'])) {
 			return array();	
 		}
-	
 		
 		if(empty($accountParamDetail['discountCode'])) {
 			$accountParamDetail['discountCode'] = '';
@@ -114,7 +113,6 @@ class AccountParamDAO extends BaseDAO {
 		}
 		
 		$accountParamDetal = $this->findSingleDetailBy(new AccountParam(), array('accountId'=>$accountParam['accountId']));
-	
 		if(!empty($accountParamDetal['id'])) {
 			$accountParam['id'] = $accountParamDetal['id'];
 			return $this->editAccontParam($accountParam);

@@ -218,7 +218,7 @@ class NotificationCommand extends ContainerAwareCommand {
 			$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
 			$emailDetail['to'] = $userDetail['email'];
 			$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
-			$emailDetail['subject'] = 'POSTR: Share post notification';
+			$emailDetail['subject'] = 'InteriorPostr: Your Post has been Shared';
 			
 			$emailDetail['body'] = $html;
 			
@@ -410,7 +410,7 @@ class NotificationCommand extends ContainerAwareCommand {
 		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
-		$emailDetail['subject'] = 'POSTR: Suggestd Article';
+		$emailDetail['subject'] = 'InteriorPostr: Recommended Posts';
 		
 		$emailDetail['body'] = $html;
 		
