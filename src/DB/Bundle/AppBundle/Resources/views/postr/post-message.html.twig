@@ -3,7 +3,7 @@
 {% block body_attr %} class="gray-bg"{% block anguler %}{% endblock %}{% endblock %}
 
 {% block body %}
-<div class="middle-box text-center  animated fadeInDown" style="max-width: 600px;">
+<div class="middle-box text-center  animated fadeInDown" style="max-width: 600px; padding-top: 0px;">
 	<div>
 		<div>
 			<h2 class="logo-name">
@@ -23,27 +23,50 @@
 					<div class="col-md-8 text-left">
 						<h3>{{ response.trendingArticleCategoryDetail.title }}</h3>
 						<h5>
-							<a href="#">{{ response.trendingArticleCategoryDetail.domain }}</a>
+							<a  href="{{ response.trendingArticleCategoryDetail.url }}" target="_blank">{{ response.trendingArticleCategoryDetail.domain }}</a>
 						</h5>
 						<p class="text-left">{{ response.trendingArticleCategoryDetail.description }}</p>
 					</div>
 				</div>
-				
-				{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.facebookPostId > 0 %}
-					<div class="row">
-						<p class="posted-actions">
-							<a class="btn btn-sm btn-success" target="_blank" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><i class="fa fa-facebook"> </i>  View Post </iclass="fa></a> 
-						
-							{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId > 0 %}
-								<a class="btn btn-sm btn-info" target="_blank" href="https://twitter.com"><i class="fa fa-twitter"> </i> View Post </iclass="fa></a> 
-							{% endif %}
-						</p>
-					</div>
+				{% if response.socialPostDetail is defined and response.socialPostDetail is not empty %}
+					{% if response.socialPostDetail.facebookPostId > 0 %}
+						<div class="row">
+							<p class="posted-actions">
+								<a class="btn btn-sm btn-success" target="_blank" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><i class="fa fa-facebook"> </i>  View Post </iclass="fa></a> 
+							
+								{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId > 0 %}
+									<a class="btn btn-sm btn-info" target="_blank" href="https://twitter.com"><i class="fa fa-twitter"> </i> View Post </iclass="fa></a> 
+								{% endif %}
+							</p>
+						</div>
+					{% endif %}
+				{% else %}
+					<form action="{{ path('db_postreach_post', {'accountId': response.accountId, 'uniqueKey': response.trendingArticleCategoryDetail.postId, 's': response.social | default('') }) }}" method="post">
+						<div class="form-group text-left mb0">
+							<input value="{{ response.trendingArticleCategoryDetail.trendingArticleId }}" type="hidden">
+							<label>Add caption (optional)</label>
+							<input name="caption" placeholder="What do you think about it?" class="form-control" type="text">
+							<hr/>
+							<div align="right">
+								<button type="button" class="btn btn-white btn-rounded" onclick="window.close();">Cancel</button>
+								<button id="post-now" type="submit" class="btn btn-rounded btn-success" ng-click="postArticle(shareArticleDetail.url)"> 
+									{% if response.social is defined and response.social is not empty %}
+										{% if response.social=='f' %}
+											<i class="fa fa-facebook" id="icon-fb" style="display: inline-block;"> </i> 
+										{% elseif response.social == 't' %}
+											<i id="icon-tw" class="fa fa-twitter" style="display: inline-block;"> </i> 
+										{% endif %}
+									{% endif %}
+									Share
+								</button>
+							</div>
+						</div>
+					</form>
 				{% endif %}
-				
+				<br/>
 				
 				{% if response.error is defined and response.error is not empty %}
-					<div class="alert alert-danger">{{ response.error }}</div>
+					<div class="alert alert-danger">{{ response.error | raw }}</div>
 				{% endif %}
 				{% if response.message is defined and response.message is not empty %}
 					<div class="alert alert-success">{{ response.message }}</div>

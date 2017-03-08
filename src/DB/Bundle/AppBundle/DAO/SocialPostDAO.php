@@ -12,6 +12,8 @@ use Facebook\Facebook;
 use Facebook\Authentication\AccessToken;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use DB\Bundle\AppBundle\Entity\ArticleNotifyHistory;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
 
 /**
  * Class For SocialPost DAO, This class is responsible for manage database 
@@ -378,10 +380,12 @@ class SocialPostDAO extends BaseDAO {
 							} else {
 								$socialPostDAO->update($socialPost, array('postStatus'=>1));
 							}
-							
+						} catch(FacebookSDKException $fe) {
+							$socialPostDAO->update($socialPost, array('postStatus'=>1, 'validStatus'=>1));
+							$socialPostResponseDetail['exception'] = $fe->getMessage();
 						} catch(Exception $e) {
-							//echo "Error haivng posting : ";
-							//echo $e->getMessage();
+							$socialPostDAO->update($socialPost, array('postStatus'=>1, 'validStatus'=>1));
+							$socialPostResponseDetail['exception'] = $e->getMessage();
 						}
 					} else if('Twitter' == $socialProfileDetail['profileType'] && $isTwExecute == true && empty($socialPostDetail['twitterPostId'])) {
 						$socialPostResponseDetail['twStatus'] = false;
@@ -476,9 +480,20 @@ class SocialPostDAO extends BaseDAO {
 			}
 		}
 		
-		$this->postSocialmessage($accountId);
+		$response = array();
+		$socialPostresponse = $this->postSocialmessage($accountId);
+		$isException = false;
+		if(!empty($socialPostresponse)) {
+			foreach($socialPostresponse as $socialResponse) {
+				if(!empty($socialResponse['exception'])) {
+					$isException = true;
+				}
+			}
+		}
+		$response['isException'] = $isException;
+		$response['socialPostId'] = $socialPostId;
 		
-		return $socialPostId;
+		return $response;
 	}
 	
 	/**

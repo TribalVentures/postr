@@ -163,7 +163,15 @@ class PostController extends DbAppController {
 		}
 		
 		$socialPostresponse = $socialPostDAO->postSocialmessage($currentUser['accountId'], $criteria);
-		$response['socialPostresponse'] = $socialPostresponse;
+		$isException = false;
+		if(!empty($socialPostresponse)) {
+			foreach($socialPostresponse as $socialResponse) {
+				if(!empty($socialResponse['exception'])) {
+					$isException = true;
+				}
+			}
+		}
+		$response['isException'] = $isException;
 		
 		$this->addInResponse('response', $response);
 		return $this->getJsonResponse($this->getResponse());
@@ -180,7 +188,6 @@ class PostController extends DbAppController {
 		}
 		
 		$social = $this->getRequestParam('s', '');
-		
 		$userDAO = new UserDAO($this->getDoctrine());
 		$userDetail = $userDAO->findSingleDetailBy(new User(), array('accountId'=>$accountId));
 		if(!empty($userDetail)) {
@@ -195,33 +202,37 @@ class PostController extends DbAppController {
 		$criteria = array();
 		if(!empty($trendingArticleCategoryDetail)) {
 			$criteria['validSocial'] = array();
-				
+		
 			if(!empty($social) && $social == 'f') {
 				$record	= array();
 				$record['trendingArticleId'] = $trendingArticleCategoryDetail['trendingArticleId'];
 				$record['profileType'] = 'Facebook';
-			
+					
 				$criteria['validSocial'][] = $record;
 			}
-				
-				
+		
+		
 			if(!empty($social) && $social == 't') {
 				$record	= array();
 				$record['trendingArticleId'] = $trendingArticleCategoryDetail['trendingArticleId'];
 				$record['profileType'] = 'Twitter';
-			
+					
 				$criteria['validSocial'][] = $record;
 			}
-			
+				
 			$trendingArticleCategoryDetail['domain'] = DBUtil::getDomain($trendingArticleCategoryDetail['url']);
 			$this->addInResponse('trendingArticleCategoryDetail', $trendingArticleCategoryDetail);
-			
+				
 			//Check article is already post
 			$socialPostDAO = new SocialPostDAO($this->getDoctrine());
 			$socialPostDetail = $socialPostDAO->findSingleDetailBy(new SocialPost(), array('accountId'=>$accountId, 'trendingArticleId'=>$trendingArticleCategoryDetail['trendingArticleId']));
+			
 			if(!empty($socialPostDetail)) {
-				if(!empty($social) && ($social == 'f' || $social == 't') && (empty($socialPostDetail['facebookPostId']) || empty($socialPostDetail['twitterPostId']))) {
+				if(!empty($social) && ($social == 'f' && empty($socialPostDetail['facebookPostId']) && $socialPostDetail['validStatus'] == 0) && ($social == 't' && empty($socialPostDetail['twitterPostId']) && $socialPostDetail['validStatus'] == 0)) {
 					$criteria['socialPost'] = $socialPostDetail;
+				} else if(empty($socialPostDetail['facebookPostId']) && empty($socialPostDetail['twitterPostId']) && $socialPostDetail['validStatus'] == 1) {
+					$socialSettingURL =  $this->generateUrl('db_postreach_post_preference_social_networks');
+					$this->addInResponse('error', 'Article is already posted on your wall but backend was not able to post, Please check your social setting and reset. <a href="' . $socialSettingURL . '">Click here</a> to change social setting');
 				} else {
 					$this->addInResponse('error', 'Article is already posted on your wall');
 					$this->addInResponse('socialPostDetail', $socialPostDetail);
@@ -229,44 +240,62 @@ class PostController extends DbAppController {
 				}
 			}
 			
-			//Post article to social feed
-			$socialPostDetail = array();
-			$socialPostDetail['accountId'] = $accountId;
-			
-			//Send message to facebook
-			$socialPostDetail['message'] = '';
-			if(!empty($trendingArticleCategoryDetail['caption'])) {
-				$socialPostDetail['message'] = $trendingArticleCategoryDetail['caption'];
-			}
-			$socialPostDetail['link'] = '';
-			if(!empty($trendingArticleCategoryDetail['url'])) {
-				$socialPostDetail['link'] = $trendingArticleCategoryDetail['url'];
-			}
-			
-			$socialPostDetail['trendingArticleId'] = '';
-			if(!empty($trendingArticleCategoryDetail['trendingArticleId'])) {
-				$socialPostDetail['trendingArticleId'] = $trendingArticleCategoryDetail['trendingArticleId'];
-			}
-			
-			if(!empty($socialPostDetail['message']) || !empty($socialPostDetail['link'])) {
-				$existingSocialPostDetail = $socialPostDAO->findSingleDetailBy(new SocialPost(), array("message"=>$socialPostDetail['message'], "link"=>$socialPostDetail['link']));
-				if(empty($existingSocialPostDetail)) {
-					$socialPostDAO->addSocialPost($socialPostDetail);
-				} else {
+			if($this->getRequest()->isMethod('POST')) {
+				$caption = $this->getRequestParam('caption', '');
+				
+				//Post article to social feed
+				$socialPostDetail = array();
+				$socialPostDetail['accountId'] = $accountId;
 					
+				//Send message to facebook
+				$socialPostDetail['message'] = '';
+				if(!empty($caption)) {
+					$socialPostDetail['message'] = $caption;
+				} else if(!empty($trendingArticleCategoryDetail['caption'])) {
+					$socialPostDetail['message'] = $trendingArticleCategoryDetail['caption'];
+				}
+				$socialPostDetail['link'] = '';
+				if(!empty($trendingArticleCategoryDetail['url'])) {
+					$socialPostDetail['link'] = $trendingArticleCategoryDetail['url'];
+				}
+					
+				$socialPostDetail['trendingArticleId'] = '';
+				if(!empty($trendingArticleCategoryDetail['trendingArticleId'])) {
+					$socialPostDetail['trendingArticleId'] = $trendingArticleCategoryDetail['trendingArticleId'];
+				}
+					
+				if(!empty($socialPostDetail['message']) || !empty($socialPostDetail['link'])) {
+					$existingSocialPostDetail = $socialPostDAO->findSingleDetailBy(new SocialPost(), array("message"=>$socialPostDetail['message'], "link"=>$socialPostDetail['link']));
+					if(empty($existingSocialPostDetail)) {
+						$socialPostDAO->addSocialPost($socialPostDetail);
+						
+						$this->addInResponse('message', 'The article has been posted to your wall.');
+					} else {
+						$this->addInResponse('error', 'Article not found');
+					}
+				}
+					
+				$socialPostResponse = $socialPostDAO->postSocialmessage($accountId, $criteria);
+				$isException = false;
+				if(!empty($socialPostResponse)) {
+					foreach($socialPostResponse as $response) {
+						if(!empty($response['exception'])) {
+							$isException = true;
+						}
+					}
+				}
+				$this->addInResponse('isException', $isException);
+					
+				//Get the social detail and add URL to to got wall
+				$socialPostDetail = $socialPostDAO->findSingleDetailBy(new SocialPost(), array('accountId'=>$accountId, 'trendingArticleId'=>$trendingArticleCategoryDetail['trendingArticleId']));
+				if(!empty($socialPostDetail)) {
+					$this->addInResponse('socialPostDetail', $socialPostDetail);
 				}
 			}
-			
-			$socialPostDAO->postSocialmessage($accountId, $criteria);
-			
-			//Get the social detail and add URL to to got wall
-			$socialPostDetail = $socialPostDAO->findSingleDetailBy(new SocialPost(), array('accountId'=>$accountId, 'trendingArticleId'=>$trendingArticleCategoryDetail['trendingArticleId']));
-			if(!empty($socialPostDetail)) {
-				$this->addInResponse('socialPostDetail', $socialPostDetail);
-			}
-			
-			$this->addInResponse('message', 'The article has been posted to your wall.');
 		}
+		
+		$this->addInResponse('accountId', $accountId);
+		$this->addInResponse('social', $social);
 		
 		return $this->getResponse();
 	}
