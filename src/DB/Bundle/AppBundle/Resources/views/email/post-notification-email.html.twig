@@ -369,6 +369,25 @@
                         </td>
                     </tr>
                 </table>
+                {% if response.isException is defined and response.isException is not empty and response.isException == true %}
+                	<table class="main" width="100%" cellpadding="0" cellspacing="0">
+	                    <tr>
+	                        <td class="content-wrap">
+	                            <table  cellpadding="0" cellspacing="0">
+	                                <tr>                                    
+	                                    <td class="content-block">
+											<p style="background-color: #f2dede; border-color: #ebccd1; color: #a94442;border: 1px solid transparent; border-radius: 4px; margin-bottom: 20px; padding: 15px;">
+												There was an error sharing your post. Please 
+												<a class="alert-link" href="{{ response.url | default('') }}{{ path('db_postreach_post_preference_social_networks') }}">click here </a> 
+												to change your social setting.
+											</p>
+	                                    </td>
+	                                </tr>                               
+	                              </table>
+	                        </td>
+	                    </tr>
+	                </table>
+                {% endif %}
                 <table class="main" width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                         <td class="content-wrap">

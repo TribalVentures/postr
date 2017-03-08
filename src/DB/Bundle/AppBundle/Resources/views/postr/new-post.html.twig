@@ -156,6 +156,30 @@
 	</div>
 </div>
 
+<!--modal content -->
+<div class="modal" id="shareSettingDialog" tabindex="-1" role="dialog"
+	aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content animated bounceInRight">
+			<div class="modal-header text-left">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title">Share Post: Important Alert</h4>
+				<!--<small class="font-bold">Select your </small>-->
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-danger">
+					There was an error sharing your post. Please <a class="alert-link" href="{{ path('db_postreach_post_preference_social_networks') }}">click here </a> to change your social setting.
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-white btn-rounded" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 {% endblock %}
 
 {% block bodyOutPagesScript %}
