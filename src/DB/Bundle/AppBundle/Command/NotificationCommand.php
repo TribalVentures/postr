@@ -124,6 +124,7 @@ class NotificationCommand extends ContainerAwareCommand {
 	private function autoPost() {
 		$accountDAO = new AccountDAO($this->getDoctrine());
 		$accountList = $accountDAO->getAccountForAutopost();
+		
 		$todayDay = strtolower(DBUtil::format(new \DateTime(), 'l'));
 		$this->log("Start autopost for day : " . $todayDay . "\r\n");
 		
@@ -142,10 +143,11 @@ class NotificationCommand extends ContainerAwareCommand {
 						if(!empty($trendingArticleList["LIST"])) {
 							$this->log("[Account Id : " . $account['accountId'] . "] Start to autopost \r\n");
 							$socialPostDAO = new SocialPostDAO($this->getDoctrine());
-							$socialPostId = $socialPostDAO->shareTrendingArticle($account['accountId'], $trendingArticleList["LIST"][0]);
-							if(!empty($socialPostId)) {
-								$this->sendPostNotification($socialPostId);
-							}
+							
+							$response = $socialPostDAO->shareTrendingArticle($account['accountId'], $trendingArticleList["LIST"][0]);
+							if(!empty($response['socialPostId'])) {
+								$this->sendPostNotification($response['socialPostId'], $response['isException']);
+							} 
 						} else {
 							$this->log("[Account Id : " . $account['accountId'] . "] No any article found \r\n");
 						}
@@ -165,7 +167,7 @@ class NotificationCommand extends ContainerAwareCommand {
 	 * This function send post notification to user
 	 * @param integer $socialPostId
 	 */
-	public function sendPostNotification($socialPostId) {
+	public function sendPostNotification($socialPostId, $isException = false) {
 		if(!isset($socialPostId)) {
 			return false;
 		}
@@ -211,6 +213,9 @@ class NotificationCommand extends ContainerAwareCommand {
 			}
 			
 			$this->addInResponse('postDetail', $postDetail);
+			if($isException == true) {
+				$this->addInResponse('isException', $isException);
+			}
 			$html = $this->renderView('DBAppBundle:email:post-notification-email.html.twig', $this->getResponse());
 			
 			$emailDetail = array();

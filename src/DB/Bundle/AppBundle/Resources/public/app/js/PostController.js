@@ -133,6 +133,10 @@ poll.controller('PostController', function($scope, $http, $location, dbLoader, $
 	    		if(data.response.response.trendingArticleId) {
 	    			$scope.removeArticle(data.response.response.trendingArticleId);
 	    		}
+	    		
+	    		if(data.response.response.isException && data.response.response.isException == true) {
+	    			$("#shareSettingDialog").modal()
+	    		}
 	    	}
         	dbLoader.hideLoader();
         }).error(function (error, status) {
