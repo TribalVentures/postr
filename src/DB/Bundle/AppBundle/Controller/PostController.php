@@ -270,8 +270,6 @@ class PostController extends DbAppController {
 						$socialPostDAO->addSocialPost($socialPostDetail);
 						
 						$this->addInResponse('message', 'The article has been posted to your wall.');
-					} else {
-						$this->addInResponse('error', 'Article not found');
 					}
 				}
 					

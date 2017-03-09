@@ -417,15 +417,29 @@ td.content-block.alignright .btn-primary {
 												<center>
 													{#<a href="{{ response.url | default('') }}{{ path('db_postreach_post', {accountId:response.userDetail.accountId | default('0'), uniqueKey:articleDetail.postId | default('0')}) }}" class="btn-primary">Post</a>
 													#}
-													<a href="{{ response.url | default('') }}{{ path('db_postreach_post', {accountId:response.userDetail.accountId | default('0'), uniqueKey:articleDetail.postId | default('0'), 's':'f'}) }}" class="btn-success">
-														<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/facebook-logo.png">
-														Post Facebook
-													</a>
+													{% set isSocialNotExist = 'true' %}
+													{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty %}
+														{% set isSocialNotExist = 'false' %}
+														<a href="{{ response.url | default('') }}{{ path('db_postreach_post', {accountId:response.userDetail.accountId | default('0'), uniqueKey:articleDetail.postId | default('0'), 's':'f'}) }}" class="btn-success">
+															<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/facebook-logo.png">
+															Post Facebook
+														</a>
+													{% endif %}
 													
-													<a href="{{ response.url | default('') }}{{ path('db_postreach_post', {accountId:response.userDetail.accountId | default('0'), uniqueKey:articleDetail.postId | default('0'), 's':'t'}) }}" class="btn-info">
-														<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/twitter-logo.png">
-														Post Twitter 
-													</a>
+													{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty %}
+														{% set isSocialNotExist = 'false' %}
+														<a href="{{ response.url | default('') }}{{ path('db_postreach_post', {accountId:response.userDetail.accountId | default('0'), uniqueKey:articleDetail.postId | default('0'), 's':'t'}) }}" class="btn-info">
+															<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/twitter-logo.png">
+															Post Twitter 
+														</a>
+													{% endif %}
+													
+													{% if isSocialNotExist == 'true' %}
+														<a href="{{ response.url | default('') }}{{ path('db_postreach_post_preference_frequency_settings') }}" class="btn-success">
+															<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/tool.png">
+															Connect Your Social Page
+														</a>
+													{% endif %}
 												</center>
 											</td>
 										</tr>

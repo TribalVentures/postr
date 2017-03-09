@@ -10,10 +10,9 @@
 				<img src="{{ asset('bundles/dbapp/postr/img/postr-logo.png') }}" />
 			</h2>
 		</div>
-		<h3>Welcome to Postr</h3>
 		<div class="ibox">
 			<div class="ibox-title">
-		    	<h5>Recommended Articles Post</h5>                        
+		    	<h5>Recommended Post</h5>                        
 			</div>
 			<div class="ibox-content">
 				<div class="row well">
@@ -41,27 +40,28 @@
 						</div>
 					{% endif %}
 				{% else %}
-					<form action="{{ path('db_postreach_post', {'accountId': response.accountId, 'uniqueKey': response.trendingArticleCategoryDetail.postId, 's': response.social | default('') }) }}" method="post">
-						<div class="form-group text-left mb0">
-							<input value="{{ response.trendingArticleCategoryDetail.trendingArticleId }}" type="hidden">
-							<label>Add caption (optional)</label>
-							<input name="caption" placeholder="What do you think about it?" class="form-control" type="text">
-							<hr/>
-							<div align="right">
-								<button type="button" class="btn btn-white btn-rounded" onclick="window.close();">Cancel</button>
-								<button id="post-now" type="submit" class="btn btn-rounded btn-success" ng-click="postArticle(shareArticleDetail.url)"> 
-									{% if response.social is defined and response.social is not empty %}
-										{% if response.social=='f' %}
-											<i class="fa fa-facebook" id="icon-fb" style="display: inline-block;"> </i> 
-										{% elseif response.social == 't' %}
-											<i id="icon-tw" class="fa fa-twitter" style="display: inline-block;"> </i> 
+					{% if response.error is not defined %}
+						<form action="{{ path('db_postreach_post', {'accountId': response.accountId, 'uniqueKey': response.trendingArticleCategoryDetail.postId, 's': response.social | default('') }) }}" method="post">
+							<div class="form-group text-left mb0">
+								<input value="{{ response.trendingArticleCategoryDetail.trendingArticleId }}" type="hidden">
+								<label>Add caption (optional)</label>
+								<input name="caption" placeholder="What do you think about it?" class="form-control" type="text">
+								<hr/>
+								<div align="right">
+									<button id="post-now" type="submit" class="btn btn-rounded btn-success" ng-click="postArticle(shareArticleDetail.url)"> 
+										{% if response.social is defined and response.social is not empty %}
+											{% if response.social=='f' %}
+												<i class="fa fa-facebook" id="icon-fb" style="display: inline-block;"> </i> 
+											{% elseif response.social == 't' %}
+												<i id="icon-tw" class="fa fa-twitter" style="display: inline-block;"> </i> 
+											{% endif %}
 										{% endif %}
-									{% endif %}
-									Share
-								</button>
+										Share
+									</button>
+								</div>
 							</div>
-						</div>
-					</form>
+						</form>
+					{% endif %}
 				{% endif %}
 				<br/>
 				
@@ -73,9 +73,23 @@
 				{% endif %}
 			</div>
 		</div>
-		<p class="m-t">
-			<small>Copyright &copy; 2017. All rights reserved.</small>
-		</p>
+	</div>
+	<hr/>
+	<div class="">
+		<table width="100%">
+			<tr>
+				<td class="aligncenter content-block">
+					<p>
+						Manage your Interior Postr email preferences and suggestions <a
+							href="{{ path('db_postreach_post_preference_frequency_settings') }}">here</a>.
+					</p>
+					<p>
+						<a href="https://twitter.com/interiorpostr">Twitter</a>
+						&nbsp;&nbsp; <a href="https://www.facebook.com/interiorpostr/">Facebook</a>
+					</p>
+				</td>
+			</tr>
+		</table>
 	</div>
 </div>
 {% endblock %}
