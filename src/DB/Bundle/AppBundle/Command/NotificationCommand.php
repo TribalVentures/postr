@@ -406,6 +406,18 @@ class NotificationCommand extends ContainerAwareCommand {
 	 * @param mixed $trendingArticleList
 	 */
 	private function sendEmailNotification($userDetail, $trendingArticleList) {
+		//Get user social setting
+		$socialProfileDAO = new SocialProfileDAO($this->getDoctrine());
+		$fbSocialProfileDetail = $socialProfileDAO->findSingleDetailBy(new SocialProfile(), array('profileType'=>'Facebook', 'accountId'=>$userDetail['accountId']));
+		if(!empty($fbSocialProfileDetail)) {
+			$this->addInResponse('fbSocialProfileDetail', $fbSocialProfileDetail);
+		}
+		
+		$twSocialProfileDetail = $socialProfileDAO->findSingleDetailBy(new SocialProfile(), array('profileType'=>'Twitter', 'accountId'=>$userDetail['accountId']));
+		if(!empty($twSocialProfileDetail)) {
+			$this->addInResponse('twSocialProfileDetail', $twSocialProfileDetail);
+		}
+		
 		$this->addInResponse('userDetail', $userDetail);
 		$this->addInResponse('trendingArticleList', $trendingArticleList["LIST"]);
 		$html = $this->renderView('DBAppBundle:email:notification-email.html.twig', $this->getResponse());
