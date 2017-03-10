@@ -136,6 +136,17 @@ class AccountController extends DbAppController {
 		$accountList = $accountDAO->getAccountList($accountForm['search'], $accountForm['currentPage'], $options);
 		$this->addInResponse('accountList', $accountList);
 		
+		//get braitnree environment
+		$braintreeMerchantId = Config::getSParameter('BRAINTREE_MERCHANT_ID');
+		$environment = Config::getSParameter('BRAINTREE_ENVIRONMENT', '');
+		
+		$braintreeUrl = 'https://www.braintreegateway.com/merchants/' . $braintreeMerchantId . '/customers/';
+		if($environment == 'sandbox') {
+			$braintreeUrl = 'https://sandbox.braintreegateway.com/merchants/' . $braintreeMerchantId . '/customers/';
+		}
+		
+		$this->addInResponse('braintreeUrl', $braintreeUrl);
+		
 		return $this->getResponse();
 	}
 	

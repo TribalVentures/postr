@@ -69,7 +69,11 @@
 						{% if response.accountList.LIST is defined and response.accountList.LIST is not empty  %}
 							{% for account in response.accountList.LIST %}
 								<tr>
-									<td>#{{ account.accountId }}- {{ account.btCustomerId | default ('NA') }}</td>
+									<td>#{{ account.accountId }}- 
+										<a href="{{ response.braintreeUrl | default('') }}{{ account.btCustomerId | default ('') }}" target="_blank">
+											{{ account.btCustomerId | default ('NA') }}
+										</a>
+									</td>
 									<td>{{ account.account }}</td>
 									<td>{{ account.email }}</td>
 									<td>
