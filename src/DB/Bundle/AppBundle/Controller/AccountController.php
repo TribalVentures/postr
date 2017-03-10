@@ -137,11 +137,14 @@ class AccountController extends DbAppController {
 		$this->addInResponse('accountList', $accountList);
 		
 		//get braitnree environment
-		$braintreeUrl = 'https://www.braintreegateway.com/merchants/gwd57kbpw8hp33rv/customers/';
+		$braintreeMerchantId = Config::getSParameter('BRAINTREE_MERCHANT_ID');
 		$environment = Config::getSParameter('BRAINTREE_ENVIRONMENT', '');
+		
+		$braintreeUrl = 'https://www.braintreegateway.com/merchants/' . $braintreeMerchantId . '/customers/';
 		if($environment == 'sandbox') {
-			$braintreeUrl = 'https://sandbox.braintreegateway.com/merchants/nrjfyx8vsjg6qw55/customers/';
+			$braintreeUrl = 'https://sandbox.braintreegateway.com/merchants/' . $braintreeMerchantId . '/customers/';
 		}
+		
 		$this->addInResponse('braintreeUrl', $braintreeUrl);
 		
 		return $this->getResponse();
