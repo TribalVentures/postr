@@ -92,7 +92,7 @@ class TrendingArticleDAO extends BaseDAO {
 			$sql .= " WHERE " . $whereCondition . " ";
 		}
 	
-		$sql .= " ORDER BY trendingArticle.score DESC ";
+		$sql .= " ORDER BY trendingArticle.lastUpdate DESC ";
 	
 		$query = $em->createQuery($sql);
 		$result = $query->setFirstResult($paggingDetails['MYSQL_LIMIT1'])->setMaxResults($paggingDetails['MYSQL_LIMIT2']);

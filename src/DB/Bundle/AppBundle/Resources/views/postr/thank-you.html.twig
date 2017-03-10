@@ -16,16 +16,20 @@
 {% block container %}
 <div class="wrapper wrapper-content">
 	<div class="middle-box mt0 animated fadeIn">
-		<h3 class="font-bold text-center">Thank you</h3>
+		<h3 class="font-bold text-center">Congratulations! You're all set. Your social media time drain ends today!</h3>
+		<p>If you selected Manual Post then you will receive your first email with post recommendations shortly and you will receive them daily every morning going forward.</p>
+		<p>If you selected Autopilot, we'll start posting for you automatically based on the settings you selected.</p>
 		<div class="error-desc">
 			<hr />
 		</div>
 	</div>
 	<div class="row">
-		<div
-			class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+		<div class="middle-box mt0 animated fadeIn">
+			<p>You can always login to our dashboard at any time to make manual posts and see the stats on your posting activity</p>
+		</div>
+		<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
 			<div class="continue-action">
-				<a href="{{ path('db_postreach_dashboard') }}" class="btn btn-primary btn-lg btn-block">Continue Posting...</a>
+				<a href="{{ path('db_postreach_dashboard') }}" class="btn btn-primary btn-lg btn-block">Go to the Dashboard</a>
 			</div>
 		</div>
 	</div>

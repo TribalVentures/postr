@@ -644,6 +644,20 @@ class IndexController extends DbAppController {
 				$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 				
 				if(!empty($accountDetail)) {
+					//Set name and contact detail of customer
+					if(!empty($currentUser['firstName'])) {
+						$accountDetail['firstName'] = $currentUser['firstName'];
+					}
+					
+					if(!empty($currentUser['lastName'])) {
+						$accountDetail['lastName'] = $currentUser['lastName'];
+					}
+					
+					if(!empty($currentUser['email'])) {
+						$accountDetail['email'] = $currentUser['email'];
+					
+					}
+					
 					$accountDetail['paymentMethodNonce'] = $paymentMethodForm['paymentMethodNonce'];
 					$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
 					
@@ -682,6 +696,8 @@ class IndexController extends DbAppController {
 		$clientToken = $dbBraintreeClient->getClientToken();
 		
 		$this->addInResponse('clientToken', $clientToken);
+		$this->addInResponse('braintreeMerchantId', Config::getSParameter('BRAINTREE_MERCHANT_ID'));
+		$this->addInResponse('braintreeEnvironment', Config::getSParameter('BRAINTREE_ENVIRONMENT'));
 		
 		//Get plan detail
 		$planDetail = array();
