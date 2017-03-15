@@ -18,7 +18,7 @@
 <div class="middle-box mt0 animated fadeIn">
 	{#<h3 class="font-bold text-center">Your Profile, Your Choice</h3>#}
 	<div class="error-desc">
-		<div class="text-center">You're almost finished with your Free Trial sign up. Enter your credit card info below. You can cancel any time before your 14 day Free Trial has expired. We will NOT charge your credit card until that date</div>
+		<div class="text-center">You're almost finished with your Free Trial sign up. Enter your credit card info below. You can cancel any time before your {{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('') }} Free Trial has expired. We will NOT charge your credit card until that date</div>
 		<hr />
 		<div class="row text-center">
 			<div id="error-message" class="text-danger">{% if response.error is defined and response.error is not empty %}{{ response.error }}{% endif %}</div>
@@ -72,9 +72,9 @@
 									<div class="col-md-4">
 										<h2>Charge</h2>
 										<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
-										{% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
+										{#% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
 											<p class="m-t">{{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('0') }} Free trial.</p>
-										{% endif %}
+										{% endif %#}
 									</div>
 									<div class="col-md-8">
 										<form id="checkout-form" action="{{ path('db_postreach_register_select_payment_method') }}" method="post">
