@@ -751,6 +751,8 @@ class IndexController extends DbAppController {
 		$emailDetail = array();
 	
 		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+		$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+		
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 		$emailDetail['subject'] = $subject;
@@ -836,6 +838,8 @@ class IndexController extends DbAppController {
 		}
 		
 		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+		$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+		
 		$emailDetail['to'] = $email;
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 		$emailDetail['subject'] = 'ACTION REQUIRED: ' . $action;
@@ -862,6 +866,8 @@ class IndexController extends DbAppController {
 		$emailDetail = array();
 	
 		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+		$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+		
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 		$emailDetail['subject'] = 'InteriorPostr: Forgot your password, Instruction to reset your password';

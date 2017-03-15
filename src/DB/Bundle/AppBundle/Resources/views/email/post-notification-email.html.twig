@@ -170,6 +170,39 @@
         text-transform: capitalize;
         min-width: 49%;
     }
+
+	.btn-success {
+		text-decoration: none;
+		color: #FFF;
+		background-color: #1c84c6;
+		border: solid #1c84c6;
+		border-width: 5px 10px;
+		line-height: 2;
+		font-weight: bold;
+		text-align: center;
+		cursor: pointer;
+		display: inline-block;
+		border-radius: 5px;
+		text-transform: capitalize;
+		min-width: 39%;
+	}
+    
+    .btn-info {
+		text-decoration: none;
+		color: #FFF;
+		background-color: #23c6c8;
+		border: solid #23c6c8;
+		border-width: 5px 10px;
+		line-height: 2;
+		font-weight: bold;
+		text-align: center;
+		cursor: pointer;
+		display: inline-block;
+		border-radius: 5px;
+		text-transform: capitalize;
+		min-width: 39%;
+	}
+	
 	tr.btn-row {
 		display: block;
 		width: 100%;
@@ -362,7 +395,7 @@
                                 </tr>
                                 <tr>
                                     <td class="aligncenter">
-                                        We just shared a new post to your social networks.
+                                        We just shared a new post on your behalf. You can review the post on your social page from the buttons below. The post can be deleted directly from that page if you choose to.
                                     </td>
                                 </tr>
 							</table>
@@ -418,19 +451,24 @@
                     </tr>
                 </table>
 				 <table width="100%" cellpadding="0" cellspacing="0">
-                    
 					<tr class="button-row">
-						{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.facebookPostId > 0 %}
-							<td class="content-block alignleft">
-									<a class="btn-primary" target="_" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><iclass="fa fa-facebook"="" aria-hidden="true"> Your Post </iclass="fa></a> 
-							</td>
-						{% endif %}
-						
-						<!--<td class="content-block alignright">
-							<a href="#" class="btn-primary">Share this</a>
-						</td>-->
+						<td class="content-block content-block1" align="center">
+							<center>
+								{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.facebookPostId != '' and response.socialPostDetail.facebookPostId != '0' %}
+									<a class="btn-success" target="_" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}">
+										<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/facebook-logo.png"> View on Facebook
+									</a> 
+								{% endif %}
+								
+								{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId != '' and response.socialPostDetail.twitterPostId != '0' %}
+									<a class="btn-info" target="_" href="https://twitter.com/statuses/{{ response.socialPostDetail.twitterPostId | default('') }}">
+										<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/twitter-logo.png">
+										View on Twitter
+									</a> 
+								{% endif %}
+							</center>
+						</td>	
 					</tr>
-                    
                 </table>
                 <div class="footer">
                     <table width="100%">
@@ -439,10 +477,10 @@
 								<p>
 									Manage your Interior Postr email preferences and suggestions <a href="{{ response.url | default('') }}{{ path('db_postreach_post_preference_frequency_settings') }}">here</a>.
 								</p>
-								<p>
+								{#<p>
 									<a href="https://twitter.com/interiorpostr">Twitter</a> &nbsp;&nbsp;
 									<a href="https://www.facebook.com/interiorpostr/">Facebook</a>
-								</p> 
+								</p>#}
 							</td>
                         </tr>
                     </table>
