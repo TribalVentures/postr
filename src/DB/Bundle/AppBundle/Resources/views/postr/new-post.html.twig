@@ -29,7 +29,7 @@
     	<h5>Recommended Articles</h5>                        
 	</div>
 	<div class="ibox-content">
-		<div class="recommended-posts">                            
+		<div class="recommended-posts" data-url="{{ url('db_postreach_dashboard') }}">                            
 			<ul>
 				{% if (response.fbSocialProfileDetail is not defined or response.fbSocialProfileDetail is empty) and (response.twSocialProfileDetail is not defined or response.twSocialProfileDetail is empty) %}
 					<li class="row">
@@ -55,28 +55,47 @@
 									<p>{{ articleDetail.url | domain }}</p>
 									<p>{{ articleDetail.description }}
 									</p>
-									<p class="db-category">
+									<p class="db-category hidden-xs">
 										<span class="label label-border" ng-repeat="categoryDetail in articleDetail.categoryList">{{ categoryDetail.category }}</span>
 									</p>
 									<!--root domain of article source -->
 									<p class="posted-actions">
-										<a class="btn btn-sm btn-primary" target="_" href="{{ articleDetail.url }}"><i class="fa fa-external-link" aria-hidden="true"></i> View Article </a> 
-										<button type="button" class="btn btn-sm btn-warning" ng-click="hideArticle(articleDetail)">
+										<a class="btn btn-sm btn-primary" target="_" href="{{ articleDetail.url }}">
+											<i class="fa fa-external-link" aria-hidden="true"></i> View Article 
+										</a> 
+										<button type="button" class="btn btn-sm btn-warning btn-block visible-xs" ng-click="hideArticle(articleDetail)">
 											<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Hide Article
 										</button>
+										 
+										<button type="button" class="btn btn-sm btn-warning hidden-xs" ng-click="hideArticle(articleDetail)">
+											<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Hide Article
+										</button>
+										{% endverbatim %}
+											{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty and response.fbSocialProfileDetail.name is not empty %}
+												<button type="button" class="btn btn-success btn-block visible-xs" ng-click="showArticleModal(articleDetail, 'fb')">
+													<i class="fa fa-facebook"> </i> Post Facebook 
+												</button>
+											{% endif %}
+											
+											{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty and response.twSocialProfileDetail.name is not empty %}
+												<button type="button" class="btn btn-info btn-block visible-xs" ng-click="showArticleModal(articleDetail, 'tw')">
+													<i class="fa fa-twitter"> </i> Post Twitter 
+												</button>
+											{% endif %}
+										{% verbatim %}
 									</p>
 								</dl>
 							</div>
 							<div class="col-md-4 text-right">
 								{% endverbatim %}
 									{% if response.fbSocialProfileDetail is defined and response.fbSocialProfileDetail is not empty and response.fbSocialProfileDetail.name is not empty %}
-										<button type="button" class="btn btn-success" ng-click="showArticleModal(articleDetail, 'fb')">
+										<button type="button" class="btn btn-success hidden-xs" ng-click="showArticleModal(articleDetail, 'fb')">
 											<i class="fa fa-facebook"> </i> Post Facebook 
 										</button>
 									{% endif %}
 									
 									{% if response.twSocialProfileDetail is defined and response.twSocialProfileDetail is not empty and response.twSocialProfileDetail.name is not empty %}
-										<button type="button" class="btn btn-info" ng-click="showArticleModal(articleDetail, 'tw')">
+										<button type="button" class="btn btn-info hidden-xs" ng-click="showArticleModal(articleDetail, 'tw')">
 											<i class="fa fa-twitter"> </i> Post Twitter 
 										</button>
 									{% endif %}

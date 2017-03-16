@@ -165,12 +165,12 @@
 											<div class="col-md-4">
 												<h2>Charge</h2>
 												<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
-												{% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
+												{#% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
 													<p class="m-t">{{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('0') }} Free trial.</p>
-												{% endif %}
+												{% endif %#}
 													
-												<p class="m-t">Get your social media marketing for
-													less than your weekly coffee cost.</p>
+												{#<p class="m-t">Get your social media marketing for
+													less than your weekly coffee cost.</p>#}
 
 											</div>
 											<div class="col-md-8">

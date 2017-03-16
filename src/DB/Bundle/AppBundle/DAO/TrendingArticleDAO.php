@@ -92,7 +92,7 @@ class TrendingArticleDAO extends BaseDAO {
 			$sql .= " WHERE " . $whereCondition . " ";
 		}
 	
-		$sql .= " ORDER BY trendingArticle.score DESC ";
+		$sql .= " ORDER BY trendingArticle.lastUpdate DESC ";
 	
 		$query = $em->createQuery($sql);
 		$result = $query->setFirstResult($paggingDetails['MYSQL_LIMIT1'])->setMaxResults($paggingDetails['MYSQL_LIMIT2']);
@@ -1157,6 +1157,8 @@ class TrendingArticleDAO extends BaseDAO {
 						$emailDetail = array();
 						
 						$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+						$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+						
 						$emailDetail['to'] = $receiver;
 						$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 						$emailDetail['subject'] = $subject;
@@ -1348,6 +1350,8 @@ class TrendingArticleDAO extends BaseDAO {
 						$emailDetail = array();
 						
 						$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+						$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+						
 						$emailDetail['to'] = $receiver;
 						$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 						$emailDetail['subject'] = $subject;

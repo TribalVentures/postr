@@ -132,6 +132,9 @@ poll.controller('PostController', function($scope, $http, $location, dbLoader, $
 	    	} else {
 	    		if(data.response.response.trendingArticleId) {
 	    			$scope.removeArticle(data.response.response.trendingArticleId);
+	    			
+	    			//Redirect to dashboard page after successful
+	    			window.location.href = $('.recommended-posts').attr('data-url');
 	    		}
 	    		
 	    		if(data.response.response.isException && data.response.response.isException == true) {

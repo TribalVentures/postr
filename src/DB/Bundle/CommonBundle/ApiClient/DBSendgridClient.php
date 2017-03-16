@@ -32,6 +32,10 @@ class DBSendgridClient {
 			->addHeader('Content-Type', 'html/text')
 			->setHtml($emailDetail['body']);
 			
+			if(!empty($emailDetail['fromName'])) {
+				$email->setFromName($emailDetail['fromName']);
+			}
+			
 			if(!empty($emailDetail['bcc'])) {
 				$email->addBcc($emailDetail['bcc']);
 			}

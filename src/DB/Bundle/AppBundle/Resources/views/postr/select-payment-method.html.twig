@@ -11,15 +11,14 @@
 
 {% block stepHeaderContainer %}
 	<h2>Payment options</h2>
- 	<p><strong>Select your payment method and start posting</strong></p>
+ 	<p><strong>Select your payment method</strong></p>
 {% endblock %}
 
 {% block container %}
 <div class="middle-box mt0 animated fadeIn">
-	<h3 class="font-bold text-center">Your Profile, Your Choice</h3>
+	{#<h3 class="font-bold text-center">Your Profile, Your Choice</h3>#}
 	<div class="error-desc">
-		<div class="text-center">You picked the categories, we pick the
-			best time for you to get the best exposure.</div>
+		<div class="text-center">You're almost finished with your Free Trial sign up. Enter your credit card info below. You can cancel any time before your {{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('') }} Free Trial has expired. We will NOT charge your credit card until that date</div>
 		<hr />
 		<div class="row text-center">
 			<div id="error-message" class="text-danger">{% if response.error is defined and response.error is not empty %}{{ response.error }}{% endif %}</div>
@@ -73,10 +72,9 @@
 									<div class="col-md-4">
 										<h2>Charge</h2>
 										<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
-										{% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
+										{#% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
 											<p class="m-t">{{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('0') }} Free trial.</p>
-										{% endif %}
-										<p class="m-t">Get your social media marketing for less than your weekly coffee cost.</p>
+										{% endif %#}
 									</div>
 									<div class="col-md-8">
 										<form id="checkout-form" action="{{ path('db_postreach_register_select_payment_method') }}" method="post">
@@ -98,8 +96,6 @@
 														<div class="form-control hosted-field" id="expiration-date"></div>
 													</div>
 												</div>
-												
-
 												<div class="col-xs-5 col-md-5 pull-right">
 													<div class="form-group">
 														<label for="cvv">CV CODE</label>
@@ -119,6 +115,19 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12" align="center" style="padding-bottom: 50px;">
+				{% if response.braintreeEnvironment is defined and response.braintreeEnvironment is not empty and response.braintreeEnvironment == 'sandbox' %}
+					<a href="https://sandbox.braintreegateway.com/merchants/{{ response.braintreeMerchantId | default('') }}/verified" target="_blank">
+	      				<img src="https://s3.amazonaws.com/braintree-badges/braintree-badge-wide-dark.png" width="280px" height ="44px" border="0"/>
+	      			</a>
+	      		{% else %}
+	      			<a href="https://www.braintreegateway.com/merchants/{{ response.braintreeMerchantId | default('') }}/verified" target="_blank">
+	      				<img src="https://s3.amazonaws.com/braintree-badges/braintree-badge-wide-dark.png" width="280px" height ="44px" border="0"/>
+	      			</a>
+	      		{% endif %}
 			</div>
 		</div>
 	</div>
