@@ -28,17 +28,17 @@
 					</div>
 				</div>
 				{% if response.socialPostDetail is defined and response.socialPostDetail is not empty %}
-					{% if response.socialPostDetail.facebookPostId > 0 %}
-						<div class="row">
-							<p class="posted-actions">
-								<a class="btn btn-sm btn-success" target="_blank" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><i class="fa fa-facebook"> </i>  View Post </iclass="fa></a> 
+					<div class="row">
+						<p class="posted-actions">
+							{% if response.socialPostDetail.facebookPostId != '' and response.socialPostDetail.facebookPostId != '0' %}
+								<a class="btn btn-sm btn-success" target="_blank" href="https://facebook.com/{{ response.socialPostDetail.facebookPostId | default('') }}"><i class="fa fa-facebook"> </i>  View Post </a> 
+							{% endif %}
 							
-								{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId > 0 %}
-									<a class="btn btn-sm btn-info" target="_blank" href="https://twitter.com"><i class="fa fa-twitter"> </i> View Post </iclass="fa></a> 
-								{% endif %}
-							</p>
-						</div>
-					{% endif %}
+							{% if response.socialPostDetail.twitterPostId != '' and response.socialPostDetail.twitterPostId != '0' %}
+								<a class="btn btn-sm btn-info" target="_blank" href="https://twitter.com/statuses/{{ response.socialPostDetail.twitterPostId | default('') }}"><i class="fa fa-twitter"> </i> View Post </a> 
+							{% endif %}
+						</p>
+					</div>
 				{% else %}
 					{% if response.error is not defined %}
 						<form action="{{ path('db_postreach_post', {'accountId': response.accountId, 'uniqueKey': response.trendingArticleCategoryDetail.postId, 's': response.social | default('') }) }}" method="post">

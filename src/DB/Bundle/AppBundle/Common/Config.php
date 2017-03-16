@@ -8,6 +8,9 @@ class Config {
 	
 	const SECURE_CONFIG_PATH = '/opt/tribal/src/postreach/docs/config.json';
 	//const SECURE_CONFIG_PATH = '/home/patildipakr/work/workspace/postreach/docs/config.json';
+	
+	//Default variable
+	const DEFAULT_FROM_NAME = 'Interior Postr';
 
 	//Paging variable
 	const RECORDS_PER_PAGE	= 10;

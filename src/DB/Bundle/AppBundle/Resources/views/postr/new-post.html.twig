@@ -29,7 +29,7 @@
     	<h5>Recommended Articles</h5>                        
 	</div>
 	<div class="ibox-content">
-		<div class="recommended-posts">                            
+		<div class="recommended-posts" data-url="{{ url('db_postreach_dashboard') }}">                            
 			<ul>
 				{% if (response.fbSocialProfileDetail is not defined or response.fbSocialProfileDetail is empty) and (response.twSocialProfileDetail is not defined or response.twSocialProfileDetail is empty) %}
 					<li class="row">
