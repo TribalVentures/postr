@@ -57,7 +57,7 @@ if [ ! -f "dist/${RELEASE_ZIP}" ]; then
 fi
 
 echo "Collecting commits from ${LAST_TAG} to ${RELEASE_TAG}.."
-COMMITS=`git log ${LAST_TAG}..${RELEASE_TAG} --format=" * %s (%h) (%aN)" | grep -v  '* Merge'`
+COMMITS=`git log ${LAST_TAG}..${RELEASE_TAG} --format=" * %s (%h) (%cN)" | grep -v  '* Merge'`
 DBPATCH=""
 RELEASE_NOTES=""
 #DBPATCH=`git diff --name-only ${LAST_TAG}..${RELEASE_TAG} db/patch.sql`
@@ -88,7 +88,7 @@ if [[ -z "$DBPATCH" ]]; then
 fi
 
 echo "Distribution created, upload to s3."
-aws s3 cp "dist/${RELEASE_ZIP}" "s3://${AWS_RELEASE_BUCKET}" 
+aws --profile tribal s3 cp "dist/${RELEASE_ZIP}" "s3://${AWS_RELEASE_BUCKET}" 
 echo
 echo "Release ${RELEASE_TAG} has been published."
 echo
