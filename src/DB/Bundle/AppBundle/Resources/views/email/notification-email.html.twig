@@ -407,9 +407,15 @@ td.content-block.alignright .btn-primary {
 										<tr>
 											<td><img class="img-responsive" src="{{ articleDetail.image }}"/></td>
 											<td class="content-block">
-												<h3>{{ articleDetail.title }}</h3>
+												<a href="{{ articleDetail.url }}" style="text-decoration: none;"><h3>{{ articleDetail.title }}</h3></a>
 												<p><a href="{{ articleDetail.url }}">{{ articleDetail.domain }}</a></p>
-												<p>{{ articleDetail.description }}</p>
+												<p title="{{ articleDetail.description }}"> 
+													{% if articleDetail.description | length > 147 %}
+														{{ articleDetail.description | slice(0, 147) }}...
+													{% else %}
+														{{ articleDetail.description }}
+													{% endif %}
+												</p>
 											</td>
 										</tr>
 										<tr class="button-row">
