@@ -460,8 +460,8 @@
 									</a> 
 								{% endif %}
 								
-								{% if response.socialPostDetail is defined and response.socialPostDetail is not empty and response.socialPostDetail.twitterPostId != '' and response.socialPostDetail.twitterPostId != '0' %}
-									<a class="btn-info" target="_" href="https://twitter.com/statuses/{{ response.socialPostDetail.twitterPostId | default('') }}">
+								{% if response.twitterUrl is defined and response.twitterUrl is not empty %}
+									<a class="btn-info" target="_" href="{{ response.twitterUrl | default('') }}">
 										<img src="{{ response.url | default('') }}/bundles/dbapp/postr/img/twitter-logo.png">
 										View on Twitter
 									</a> 

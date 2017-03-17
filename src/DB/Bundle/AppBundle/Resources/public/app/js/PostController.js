@@ -115,7 +115,7 @@ poll.controller('PostController', function($scope, $http, $location, dbLoader, $
 			$scope.twProfile = '';
 		}
 		
-		dbLoader.showLoader();
+		dbLoader.showLoader('Posting...');
 		
 		$timeout(function() {
 			$("#shareModal").modal('hide');

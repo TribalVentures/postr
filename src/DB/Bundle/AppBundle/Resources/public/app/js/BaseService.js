@@ -8,6 +8,10 @@ poll.factory('mySplit', function(string) {
 poll.factory('dbLoader', function () {
     return {
     	showLoader: function(x) {
+    		if(typeof x != 'undefiend') {
+    			$('#bt-loader').find('div.modal-footer p').text(x);
+    		}
+    		
     		$('#bt-loader').modal({backdrop: 'static', keyboard: false});
         },
         hideLoader: function() {

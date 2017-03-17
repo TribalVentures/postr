@@ -198,18 +198,27 @@ class NotificationCommand extends ContainerAwareCommand {
 				
 			$socialProfileDAO = new SocialProfileDAO($this->getDoctrine());
 			$fbSocialProfileDetail = $socialProfileDAO->findSingleDetailBy(new SocialProfile(), array('profileType'=>'Facebook', 'accountId'=>$socialPostDetail['accountId']));
-				
+			$twSocialProfileDetail = $socialProfileDAO->findSingleDetailBy(new SocialProfile(), array('profileType'=>'Twitter', 'accountId'=>$socialPostDetail['accountId']));
+			
 			$postDetail = array();
 			if(!empty($fbSocialProfileDetail['picture'])) {
 				$postDetail['profileImage'] = $fbSocialProfileDetail['picture'];
 				$postDetail['name'] = $fbSocialProfileDetail['name'];
 			} else {
-				$twSocialProfileDetail = $socialProfileDAO->findSingleDetailBy(new SocialProfile(), array('profileType'=>'Twitter', 'accountId'=>$socialPostDetail['accountId']));
-					
 				if(!empty($twSocialProfileDetail['picture'])) {
 					$postDetail['profileImage'] = $twSocialProfileDetail['picture'];
 					$postDetail['name'] = $twSocialProfileDetail['name'];
 				}
+			}
+			
+			if(!empty($twSocialProfileDetail['socialProfileId'])) {
+				//Generate twitter URL
+				$url = 'https://twitter.com/[TWITTER_NAME]';
+				$url = str_replace('[TWITTER_NAME]', $twSocialProfileDetail['name'], $url);
+				if(!empty($socialPostDetail['twitterPostId']) && $socialPostDetail['twitterPostId'] != '' && $socialPostDetail['twitterPostId'] != '0') {
+					$url .= '/status/' . $socialPostDetail['twitterPostId'];
+				}
+				$this->addInResponse('twitterUrl', $url);
 			}
 			
 			$this->addInResponse('postDetail', $postDetail);
