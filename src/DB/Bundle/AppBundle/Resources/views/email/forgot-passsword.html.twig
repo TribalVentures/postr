@@ -295,24 +295,24 @@ a {
 									</td>
 								</tr>
 								<tr>
-									<td class="content-block">We received request to reset your password for your POSTR account: {{ response.userDetail.email | default('') }}. We are here to help.</td>
+									<td class="content-block">We received a request to reset your password for your Interior Postr account: : {{ response.userDetail.email | default('') }}.  We are here to help.</td>
 								</tr>
 								<tr>
-									<td class="content-block">Simply click on the buttonto set a new password:</td>
+									<td class="content-block">Click on the button below to set a new password:</td>
 								</tr>
 								<tr>
 									<td class="content-block aligncenter"><a href="{{ url('db_postreach_reset_password', { 'uniqueToken': response.userDetail.uniqueToken | default('') }) }}" class="btn-primary">Reset my password</a></td>
 								</tr>
 								<tr>
 									<td class="content-block">
-										You can also copy following URL to your browser
+										You can also copy and paste the below link in your browser
 										<br/>
 										{{ url('db_postreach_reset_password', { 'uniqueToken': response.userDetail.uniqueToken | default('') }) }}
 									</td>
 								</tr>
 								<tr>
 									<td class="content-block">
-										For any further queries about subscription and log-in details, please write to us at support@postrplatfom.com or call us at our support Helpline given below.
+										For any further queries about subscription and log-in details, please write to us at  <a href="mailto:support@interiorpostr.com">support@interiorpostr.com</a>
 									</td>
 								</tr>
 							</table>
@@ -320,13 +320,14 @@ a {
 					</tr>
 				</table>
 				<div class="footer">
-					<table width="100%">
+					{#<table width="100%">
 						<tr>
-							<td class="aligncenter content-block">Follow <a href="https://twitter.com/interiorpostr">@interiorpostr</a>
+							<td class="aligncenter content-block">
+								Follow <a href="https://twitter.com/interiorpostr">@interiorpostr</a>
 								on Twitter.
 							</td>
 						</tr>
-					</table>
+					</table>#}
 				</div>
 			</div>
 		</td>

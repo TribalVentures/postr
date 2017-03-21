@@ -870,7 +870,7 @@ class IndexController extends DbAppController {
 		
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
-		$emailDetail['subject'] = 'InteriorPostr: Forgot your password, Instruction to reset your password';
+		$emailDetail['subject'] = 'InteriorPostr: Reset Your Password';
 	
 		$emailDetail['body'] = $html;
 	
