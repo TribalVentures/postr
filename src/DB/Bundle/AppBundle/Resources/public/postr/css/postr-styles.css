@@ -14,7 +14,7 @@
 /**page wrapper for topic grid**/
 .wrapper-content {
     padding: 40px;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .product-box {
     overflow: hidden;
