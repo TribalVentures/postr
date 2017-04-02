@@ -662,25 +662,39 @@ class IndexController extends DbAppController {
 					$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
 					
 					if(!empty($accountDetail['error'])) {
-						$this->addInResponse('error', 'Error while saving card detail, Please contact to POSTR team');
+						$this->addInResponse('error', 'Error while saving card detail, Please contact to InteriorPostr team');
+						
+						//Send email to team about payment fail
+						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
+						$this->sendPaymentfailEmail($accountDetail, $currentUser);
 					} else {
 						//Redirect to thankyou page
-			
-						//Set account status as set category
-						$accountDAO = new AccountDAO($this->getDoctrine());
-						$accountDAO->setAccountStatus($currentUser['accountId'], AccountDAO::ACCOUNT_STATUS_PAYMENT_DONE);
+						//Check all braintree ids created or not
+						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 						
-						//Set status in session
-						if(isset($currentUser['account']['accountStatus'])) {
-							$currentUser['account'] = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
-							$this->setUser($currentUser);
+						//check for customer is created in braintree 
+						if(empty($accountDetail) || empty($accountDetail['btCustomerId']) || empty($accountDetail['btSubscriptionId'])) {
+							$this->addInResponse('error', 'Error while saving card detail, Please contact to InteriorPostr team');
+							
+							//Send email to team about payment fail
+							$this->sendPaymentfailEmail($accountDetail, $currentUser);
+						} else {
+							//Set account status as set category
+							$accountDAO = new AccountDAO($this->getDoctrine());
+							$accountDAO->setAccountStatus($currentUser['accountId'], AccountDAO::ACCOUNT_STATUS_PAYMENT_DONE);
+							
+							//Set status in session
+							if(isset($currentUser['account']['accountStatus'])) {
+								$currentUser['account'] = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
+								$this->setUser($currentUser);
+							}
+							
+							//Send notification to internal team
+							$userDetail = $this->getUser();
+							$this->sendRegistrationNotification($userDetail);
+							
+							return $this->sendRequest('db_postreach_register_thank_you');
 						}
-						
-						//Send notification to internal team
-						$userDetail = $this->getUser();
-						$this->sendRegistrationNotification($userDetail);
-						
-						return $this->sendRequest('db_postreach_register_thank_you');
 					}
 				}
 			} else {
@@ -871,6 +885,47 @@ class IndexController extends DbAppController {
 		$emailDetail['to'] = $userDetail['email'];
 		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
 		$emailDetail['subject'] = 'InteriorPostr: Reset Your Password';
+	
+		$emailDetail['body'] = $html;
+	
+		$dbSendgridClient = new DBSendgridClient(Config::getSParameter('SENDGRID_API_KEY_GENERATE_TOKEN'));
+		return $dbSendgridClient->sendMail($emailDetail);
+	}
+
+	/**
+	 * This function send reset password email to user
+	 * @param unknown $userDetail
+	 */
+	public function sendPaymentfailEmail($accountDetail, $userDetail) {
+		if(empty($userDetail) || empty($accountDetail)) {
+			return false;
+		}
+	
+		$this->addInResponse('serverUrl', Config::getSParameter('SERVER_APP_PATH', ''));
+		$this->addInResponse('userDetail', $userDetail);
+		$this->addInResponse('accountDetail', $accountDetail);
+		$html = $this->renderView('DBAppBundle:email:pyament-fail.html.twig', $this->getResponse());
+	
+		$email = Config::getSParameter('TEAM_EMAIL', []);
+		if(!is_array($email)) {
+			$email = split(',', $email);
+			for($index = 0; $index < count($email); $index ++) {
+				$email[$index] = trim($email[$index]);
+			}
+		} else {
+			for($index = 0; $index < count($email); $index ++) {
+				$email[$index] = trim($email[$index]);
+			}
+		}
+		
+		$emailDetail = array();
+	
+		$emailDetail['from'] = Config::getSParameter('FROM_EMAIL');
+		$emailDetail['fromName'] = Config::getSParameter('FROM_EMAIL_NAME', Config::DEFAULT_FROM_NAME);
+		
+		$emailDetail['to'] = $email;
+		$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
+		$emailDetail['subject'] = 'Action Required: Payment Method failt to acountId: ' . $accountDetail['accountId'];
 	
 		$emailDetail['body'] = $html;
 	

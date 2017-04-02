@@ -294,11 +294,11 @@ class AccountDAO extends BaseDAO {
 						$subscriptionDetail['planId'] = $accountDetail['btPlanId'];
 					} else {
 						$subscriptionDetail['planId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
-						$accountParam['btPlanId'] = ''; 
+						//$accountParam['btPlanId'] = ''; 
 					}
 				} else {
 					$subscriptionDetail['planId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
-					$accountParam['btPlanId'] = '';
+					//$accountParam['btPlanId'] = '';
 				}
 
 				$subscription = $dbBraintreeClient->createSubscription($subscriptionDetail);
