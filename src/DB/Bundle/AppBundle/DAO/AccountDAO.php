@@ -795,9 +795,6 @@ class AccountDAO extends BaseDAO {
 		//Get account detail
 		$accountDetail = $this->findSingleDetailBy(new Account(), array('accountId'=>$accountId));
 		if(!empty($accountDetail)) {
-			//Set account status status to send confirmation email
-			$this->setAccountStatus($accountId, AccountDAO::ACCOUNT_STATUS_CANCEL);
-			
 			//Check if account already canceled
 			if($accountDetail['accountStatus'] != AccountDAO::ACCOUNT_STATUS_CANCEL) {
 				if(!empty($accountDetail['btSubscriptionId'])) {
@@ -814,6 +811,9 @@ class AccountDAO extends BaseDAO {
 					}
 				}
 			}
+			
+			//Set account status status to send confirmation email
+			$this->setAccountStatus($accountId, AccountDAO::ACCOUNT_STATUS_CANCEL);
 		}
 		
 		return $response;
