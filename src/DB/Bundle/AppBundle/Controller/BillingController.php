@@ -123,18 +123,18 @@ class BillingController extends DbAppController {
 					$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
 					
 					if(!empty($accountDetail['error'])) {
-						$this->addInResponse('error', 'Error while saving card detail, Please contact to POSTR team');
+						$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 					} else {
 						//Update account detail in session
 						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 						$currentUser['account'] = $accountDetail;
 						$this->setUser($currentUser);
 						
-						$this->addInResponse('message', 'Your card detail updated successfully');
+						$this->addInResponse('message', 'Your payment information updated successfully');
 					}
 				}
 			} else {
-				$this->addInResponse('error', 'Error while saving card detail, Please contact to POSTR team');
+				$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 			}
 		}
 		

@@ -662,7 +662,7 @@ class IndexController extends DbAppController {
 					$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
 					
 					if(!empty($accountDetail['error'])) {
-						$this->addInResponse('error', 'Error while saving card detail, Please contact to InteriorPostr team');
+						$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 						
 						//Send email to team about payment fail
 						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
@@ -674,7 +674,7 @@ class IndexController extends DbAppController {
 						
 						//check for customer is created in braintree 
 						if(empty($accountDetail) || empty($accountDetail['btCustomerId']) || empty($accountDetail['btSubscriptionId'])) {
-							$this->addInResponse('error', 'Error while saving card detail, Please contact to InteriorPostr team');
+							$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 							
 							//Send email to team about payment fail
 							$this->sendPaymentfailEmail($accountDetail, $currentUser);
@@ -698,7 +698,7 @@ class IndexController extends DbAppController {
 					}
 				}
 			} else {
-				$this->addInResponse('error', 'Error while saving card detail, Please contact to POSTR team');
+				$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 			}
 		}
 		
