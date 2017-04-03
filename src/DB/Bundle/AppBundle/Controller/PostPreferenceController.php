@@ -66,6 +66,8 @@ class PostPreferenceController extends DbAppController {
 			$this->addInResponse('message', 'Category updated successfully');
 		}
 		
+		$this->addInResponse('CDN_URL', Config::getSParameter('CDN_URL'));
+		
 		return $this->getResponse();
 	}
 
