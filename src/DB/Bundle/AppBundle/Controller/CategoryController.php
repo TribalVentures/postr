@@ -9,6 +9,7 @@ use DB\Bundle\AppBundle\Common\Config;
 use DB\Bundle\AppBundle\Common\SpikeConfig;
 use DB\Bundle\AppBundle\Entity\Category;
 use DB\Bundle\CommonBundle\Util\DBUtil;
+use DB\Bundle\CommonBundle\Util\Storage\FileStorage;
 
 class CategoryController extends DbAppController {
 	/**
@@ -43,6 +44,8 @@ class CategoryController extends DbAppController {
 		
 		$categoryList = $categoryDAO->getCategoryList($categoryForm['parentCategoryId'], '-1', $categoryForm['currentPage']);
 		$this->addInResponse('categoryList', $categoryList);
+		
+		$this->addInResponse('CDN_URL', Config::getSParameter('CDN_URL'));
 		
 		return $this->getResponse();
 	}
@@ -189,7 +192,7 @@ class CategoryController extends DbAppController {
 	}
 	
 	/**
-	 * This function upload the category image into upload default upload directory
+	 * This function upload the category image into storage
 	 * @param integer $categoryId
 	 * @param integer $imageUrl
 	 * @return string Return the uploaded image path
@@ -207,11 +210,21 @@ class CategoryController extends DbAppController {
 				$fileName = 'category' . $categoryId . DBUtil::getUniqueKey() . '.' . $extension;
 	
 				$imageUrlPath = $imageUploadPath . $fileName;
-					
+				
 				if(!empty($imageUrl) && file_exists($imageUrl)) {
 					unlink($imageUrl);
 				}
 				move_uploaded_file($_FILES['categoryForm']['tmp_name']['categoryImage'], $imageUrlPath);
+				
+				// Do we need to use file storage to handle this file?
+				if(Config::getSParameter('FILE_STORAGE')){
+					// Get storage adapter.
+					$StorageAdapter = FileStorage::factory(Config::getSParameter('FILE_STORAGE'));
+					// Save the new file.
+					$StorageAdapter->save($imageUrlPath, $imageUrlPath, true);
+					// Delete the old file. 
+					$StorageAdapter->delete($imageUrl);
+				}
 	
 				$imageUrl = $imageUrlPath;
 			}
