@@ -37,7 +37,11 @@
 						<div class="ibox-content product-box">
 							<label> 
 								{% if category.image is not empty %}
-									<img alt="{{ category.category }}" src="{{ asset(category.image) }}" class="img-responsive" alt=""/>
+									{% if response.CDN_URL is not empty %}
+										<img alt="{{ category.category }}" src="{{ response.CDN_URL }}/{{ category.image }}" class="img-responsive" alt=""/>
+									{% else %}
+										<img alt="{{ category.category }}" src="{{ asset(category.image) }}" class="img-responsive" alt=""/>
+									{% endif %}
 								{% else %}
 									<img alt="{{ category.category }}" src="https://www.pgeveryday.com/LayoutAssets/Core/Images/image-preview-default.jpg" class="img-responsive" alt=""/>
 								{% endif %}
