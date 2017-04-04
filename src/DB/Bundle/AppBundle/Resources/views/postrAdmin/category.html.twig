@@ -42,7 +42,11 @@
 									<td>#{{ category.categoryId }}</td>
 									<td>
 										{% if category.image is not empty %}
-											<img alt="{{ category.category }}" src="{{ response.CDN_URL }}{{ asset(category.image) }}" width="60px">
+											{% if response.CDN_URL is not empty %}
+												<img alt="{{ category.category }}" src="{{ response.CDN_URL }}/{{ category.image }}" width="60px">
+											{% else %}
+												<img alt="{{ category.category }}" src="{{ asset(category.image) }}" width="60px">
+											{% endif %}
 										{% else %}
 											<img alt="{{ category.category }}" src="https://www.pgeveryday.com/LayoutAssets/Core/Images/image-preview-default.jpg" width="60px;"/>
 										{% endif %}
