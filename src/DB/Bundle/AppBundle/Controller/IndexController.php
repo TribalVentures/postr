@@ -433,6 +433,8 @@ class IndexController extends DbAppController {
 		
 		$this->addInResponse('categoryList', $categoryList);
 		
+		$this->addInResponse('CDN_URL', Config::getSParameter('CDN_URL'));
+		
 		return $this->getResponse();
 	}
 	
