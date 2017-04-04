@@ -32,13 +32,17 @@ class AmazonS3Adapter extends AdapterInterface {
 			return $this->s3;
 		}
 		if($this->config != false){
-			$this->s3 = S3Client::factory([
-				'key'							=> $this->config['key'],
-				'secret'						=> $this->config['secret'],
-				'version'						=> $this->config['version'],
-				'region'						=> $this->config['region'],
-				'scheme'						=> $this->config['scheme']
-			]);
+			$factory_config = [];
+			if(array_key_exists('key', $this->config)){
+				$factory_config['key'] = $this->config['key'];
+			}
+			if(array_key_exists('secret', $this->config)){
+				$factory_config['secret'] = $this->config['secret'];
+			}
+			$factory_config['version'] = $this->config['version'];
+			$factory_config['region'] = $this->config['region'];
+			$factory_config['scheme'] = $this->config['scheme'];
+			$this->s3 = S3Client::factory($factory_config);
 			return true;
 		}
 		return false;
