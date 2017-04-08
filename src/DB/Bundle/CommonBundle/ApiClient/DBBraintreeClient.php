@@ -93,22 +93,23 @@ class DBBraintreeClient {
 			$customer['expirationDate'] = '';
 			$customer['cardType'] = '';
 			
-			$customer['id'] 			= $result->customer->id;
-			if($result->customer->creditCards){
+			$customer['id']	= $result->customer->id;
+			
+			$paymentMethod = $result->customer->paymentMethods[0];
+			if($paymentMethod instanceof CreditCard){
 				$customer['paymentMethod'] = 'creditcard';
-				$customer['cardToken'] 		= $result->customer->creditCards[0]->token;
-			}
-			if($result->customer->paypalAccounts){
+				$customer['creditCardNo'] 	= $paymentMethod->maskedNumber;
+				$customer['expirationDate'] = $paymentMethod->expirationDate;
+				$customer['cardType'] 		= $paymentMethod->cardType;
+				
+			}else if($paymentMethod instanceof PayPalAccount){
 				$customer['paymentMethod'] = 'paypal';
-				$customer['paypalEmail'] 	= $result->customer->paypalAccounts[0]->email;
-				$customer['cardToken'] 		= $result->customer->paypalAccounts[0]->token;
+				$customer['paypalEmail'] 	= $paymentMethod->email;
+				
 			}
-			if($result->customer->paymentMethods){
-				$customer['creditCardNo'] 	= $result->customer->paymentMethods[0]->maskedNumber;
-				$customer['expirationDate'] = $result->customer->paymentMethods[0]->expirationDate;
-				$customer['cardType'] 		= $result->customer->paymentMethods[0]->cardType;
-			}
+			$customer['cardToken'] 	= $paymentMethod->token;
 			$response['customer'] 	= $customer;
+			
 		} else {
 			$errorDetail = array();
 			foreach ($result->errors->deepAll() as $error) {
