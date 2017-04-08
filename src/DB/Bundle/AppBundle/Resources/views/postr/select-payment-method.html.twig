@@ -27,46 +27,49 @@
 		<div class="row">
 			<div class="col-md-12 m-b">
 				<div class="panel-group payments-method" id="accordion">
-					{#<div class="panel panel-default">
-						<div class="panel-heading">
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingOne">
 							<div class="pull-right">
 								<i class="fa fa-cc-paypal text-success"></i>
 							</div>
-							<h5 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">PayPal</a>
-							</h5>
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+									PayPal
+								</a>
+							</h4>
 						</div>
-						<div id="collapseOne" class="panel-collapse collapse in">
+						<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 							<div class="panel-body">
 								<div class="row">
 									<div class="col-md-10">
 										<h2>Charge</h2>
-										<h3 class="text-navy">$20.00/mo</h3>
+										<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
 										<p class="m-t">
-											Get your social media marketing for less
-											than your weekly coffee cost.
+											Get your social media marketing for less than your weekly coffee cost.
 										</p>
-										<button class="btn btn-success">
+										<button class="btn btn-success" id="paypal-button">
 											<i class="fa fa-paypal"> </i> Subscribe via PayPal
 										</button>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>#}
+					</div>
 					<div class="panel panel-default">
-						<div class="panel-heading">
+						<div class="panel-heading" role="tab" id="headingTwo">
 							<div class="pull-right">
 								<i class="fa fa-cc-visa text-success"></i>
 								<i class="fa fa-cc-amex text-primary"></i>
 								<i class="fa fa-cc-mastercard text-warning"></i>
 								<i class="fa fa-cc-discover text-danger"></i>
 							</div>
-							<h5 class="panel-title"><a>Credit Card</a>
-								{#<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Credit Card</a>#}
+							<h5 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+									Credit Card
+								</a>
 							</h5>
 						</div>
-						<div id="collapseTwo" class="panel-collapse collapse in">
+						<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 							<div class="panel-body">
 								<div class="row">
 									<div class="col-md-4">
@@ -151,6 +154,9 @@
 <!-- Load the Client component. -->
 <script src="https://js.braintreegateway.com/web/3.6.2/js/client.min.js"></script>
 
+<!-- Load the PayPal component. -->
+<script src="https://js.braintreegateway.com/web/3.6.2/js/paypal.min.js"></script>
+
 <!-- Load the Hosted Fields component. -->
 <script src="https://js.braintreegateway.com/web/3.6.2/js/hosted-fields.min.js"></script>
 
@@ -169,7 +175,7 @@
 	var authorization = '{{ response.clientToken }}';
 	var form = document.querySelector('#checkout-form');
 	var submit = document.querySelector('input[type="submit"][value="Subscribe"]');
-	
+	var paypalButton = document.querySelector('#paypal-button');
 	braintree.client.create({
 	  		authorization: authorization
 		}, function(err, clientInstance) {
@@ -178,8 +184,9 @@
 	    		return;
 	  		}
 	  	createHostedFields(clientInstance);
+		createPaypalComponent(clientInstance);
 	});
-
+	
 	function createHostedFields(clientInstance) {
 		braintree.hostedFields.create({
 	    	client: clientInstance,
@@ -231,6 +238,45 @@
 	        	});
 	      	}, false);
 	    });
+	}
+	
+	function createPaypalComponent(clientInstance){
+		// Create a PayPal component.
+		braintree.paypal.create({
+			client: clientInstance
+		}, function (paypalErr, paypalInstance) {
+
+			// Stop if there was a problem creating PayPal.
+			// This could happen if there was a network error or if it's incorrectly
+			// configured.
+			if (paypalErr) {
+				console.error('Error creating PayPal:', paypalErr);
+				return;
+			}
+
+			// Enable the button.
+			paypalButton.removeAttribute('disabled');
+
+			// When the button is clicked, attempt to tokenize.
+			paypalButton.addEventListener('click', function (event) {
+				// Because tokenization opens a popup, this has to be called as a result of
+				// customer action, like clicking a button—you cannot call this at any time.
+				paypalInstance.tokenize({
+					flow: 'vault'
+				}, function (tokenizeErr, payload) {
+
+					// Stop if there was an error.
+					if (tokenizeErr) {
+						document.querySelector('div#error-message').innerText = tokenizeErr.message;
+						return;
+					}
+					// Tokenization succeeded!
+					paypalButton.setAttribute('disabled', true);
+					document.querySelector('input#paymentMethodNonce').value = payload.nonce;
+					document.querySelector('form#paymentMethodForm').submit();
+				});
+			}, false);
+		});
 	}
 </script>
 {% endblock %}

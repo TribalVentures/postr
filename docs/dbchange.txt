@@ -1,3 +1,9 @@
+8 Apr 2017
+ALTER TABLE `account` ADD `btPaypalEmail` VARCHAR(255) NULL AFTER `btCustomerId`; 
+
+ALTER TABLE `account` ADD `btPaymentMethod` VARCHAR(32) NULL AFTER `btCustomerId`; 
+
+-----------------------------------------------------------------------------
 24 Feb 2017
 
 ALTER DATABASE postr CHARACTER SET utf8 COLLATE utf8_general_ci;
