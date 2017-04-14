@@ -94,23 +94,6 @@ class DBUtil {
 
 		return $date;
 	}
-	
-	/**
-	 * This function takes in a date and converts it from UTC to the desired one.
-	 * @param $date string
-	 * @param $format string 
-	 * @param $userTimeZone string 
-	 * @param $serverTimeZone string 
-	 */
-	public static function convertToUserDate($date, $format = 'n/j/Y g:i A', $userTimeZone = 'America/Los_Angeles', $serverTimeZone = 'UTC') {
-		try {
-			$dateTime = new \DateTime($date, new \DateTimeZone($serverTimeZone));
-			$dateTime->setTimezone(new \DateTimeZone($userTimeZone));
-			return $dateTime->format($format);
-		} catch (Exception $e) {
-			return '';
-		}
-	}
 
 	/**
 	 * This function return all list of timezone

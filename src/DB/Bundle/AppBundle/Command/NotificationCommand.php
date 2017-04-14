@@ -136,10 +136,8 @@ class NotificationCommand extends ContainerAwareCommand {
 				$accountFrequencyDetail = $accountFrequencyDAO->getAccountFrequencyDetail($account['accountId'], array('category'=>'Autopilot'));
 				if(!empty($accountFrequencyDetail)) {
 					$accountFrequencyDetail = $accountFrequencyDAO->setFrequencyDetail($accountFrequencyDetail);
-					
-					// Create the today string based on the user timezone settings.
-					$date = date('Y-m-d G:i:s', time()); //'2014-09-04 22:37:22';
-					$todayDay = DBUtil::convertToUserDate($date, 'l', $accountFrequencyDetail['timezone'], 'UTC');
+
+					$todayDay = strtolower(DBUtil::format(new \DateTime($account['tz_time']), 'l'));
 					$this->log("Check autopost for user day : " . $todayDay . "\r\n");
 					
 					if(isset($accountFrequencyDetail[$todayDay]) && $accountFrequencyDetail[$todayDay] == '1') {
