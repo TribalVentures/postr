@@ -11,6 +11,7 @@ use DB\Bundle\AppBundle\Entity\User;
 use DB\Bundle\AppBundle\Entity\SocialPostMetric;
 use DB\Bundle\CommonBundle\ApiClient\DBBraintreeClient;
 use DB\Bundle\AppBundle\Entity\ArticleNotifyHistory;
+use DB\Bundle\AppBundle\Entity\AccountFrequency;
 /**
  * Class For Account DAO, This class is responsible for manage database 
  * operation for account table/entity
@@ -715,10 +716,11 @@ class AccountDAO extends BaseDAO {
 	 * This function return the all available account for sending the email notifications
 	 */
 	public function getAccountForAutopost($noOfAccount = 50) {
-		$sql = 'SELECT u.accountId, ah.last_Send ' .
+		$sql = 'SELECT u.accountId, ah.last_Send, convert_Tz(NOW(),\'UTC\',u.timezone) as tz_time ' .
 			'FROM `user` u '. 
 			'INNER JOIN account a ON u.accountId = a.accountId ' .
 			'INNER JOIN notification_settings ns ON u.accountId = ns.accountId ' .
+			"INNER JOIN  account_frequency af ON u.accountId = af.accountId AND af.category = '" . AccountFrequency::ACCOUNT_FREQUENCY_CATEGORY_AUTOPILOT . "' " .
 			'LEFT JOIN ( '. 
 				"SELECT DISTINCT accountId, MAX(creationDate) as last_send FROM article_notify_history WHERE notifyType = '" . ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST . "' GROUP BY 1) ah " . 
 			'ON u.accountId = ah.accountId '.

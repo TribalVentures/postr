@@ -136,6 +136,9 @@ class NotificationCommand extends ContainerAwareCommand {
 				$accountFrequencyDetail = $accountFrequencyDAO->getAccountFrequencyDetail($account['accountId'], array('category'=>'Autopilot'));
 				if(!empty($accountFrequencyDetail)) {
 					$accountFrequencyDetail = $accountFrequencyDAO->setFrequencyDetail($accountFrequencyDetail);
+
+					$todayDay = strtolower(DBUtil::format(new \DateTime($account['tz_time']), 'l'));
+					$this->log("Check autopost for user day : " . $todayDay . "\r\n");
 					
 					if(isset($accountFrequencyDetail[$todayDay]) && $accountFrequencyDetail[$todayDay] == '1') {
 						$trendingArticleList = $trendingArticleDAO->getTrendingArticleListByAccount($account['accountId'], 1, Config::getSParameter('TRENDING_ARTICLE_NO_OF_VALID_DAY'));
@@ -154,6 +157,7 @@ class NotificationCommand extends ContainerAwareCommand {
 					} else {
 						$this->log("[Account Id : " . $account['accountId'] . "] is not for " . $todayDay . " \r\n");
 					}
+					
 				} else {
 					$this->log("[Account Id : " . $account['accountId'] . "] No account frequency found \r\n");
 				}
