@@ -58,22 +58,30 @@
 				<small class="pull-right"> <a data-toggle="modal"
 					href="#modal-form">Update Payment Method</a>
 				</small> 
-				{% if response.accountDetail.btCardType is defined and response.accountDetail.btCardType is not empty %}
-					{% if response.accountDetail.btCardType == 'Visa' %}
-						<i class="fa fa-cc-visa payment-icon-big text-success"></i>
-					{% elseif response.accountDetail.btCardType == 'American Express' %}
-						<i class="fa fa-cc-amex payment-icon-big text-success"></i>
-					{% elseif response.accountDetail.btCardType == 'MasterCard' %}
-						<i class="fa fa-cc-mastercard payment-icon-big text-success"></i>
-					{% elseif response.accountDetail.btCardType == 'Discover' %}
-						<i class="fa fa-cc-discover payment-icon-big text-success"></i>
+				{% if response.accountDetail.btPaymentMethod == 'creditcard' %}
+					{% if response.accountDetail.btCardType is defined and response.accountDetail.btCardType is not empty %}
+						{% if response.accountDetail.btCardType == 'Visa' %}
+							<i class="fa fa-cc-visa payment-icon-big text-success"></i>
+						{% elseif response.accountDetail.btCardType == 'American Express' %}
+							<i class="fa fa-cc-amex payment-icon-big text-success"></i>
+						{% elseif response.accountDetail.btCardType == 'MasterCard' %}
+							<i class="fa fa-cc-mastercard payment-icon-big text-success"></i>
+						{% elseif response.accountDetail.btCardType == 'Discover' %}
+							<i class="fa fa-cc-discover payment-icon-big text-success"></i>
+						{% endif %}
 					{% endif %}
+					<h2>{{ response.accountDetail.btCreditCardNo }}</h2>
+				{% elseif response.accountDetail.btPaymentMethod == 'paypal' %}
+					<i class="fa fa-paypal payment-icon-big text-success"></i>
 				{% endif %}
 				
-				<h2>{{ response.accountDetail.btCreditCardNo }}</h2>
 				<div class="row">
 					<div class="col-sm-6">
+						{% if response.accountDetail.btPaymentMethod == 'creditcard' %}
 						<small> <strong>Expiry date:</strong> {{ response.accountDetail.btExpirationDate | default('-') }}</small>
+						{% elseif response.accountDetail.btPaymentMethod == 'paypal' %}
+						<small> <strong>PayPal:</strong> {{ response.accountDetail.btPaypalEmail | default('-') }}</small>
+						{% endif %}
 					</div>
 					<div class="col-sm-6 text-right">
 						<small> <strong>Name:</strong> {{ response.accountDetail.account }}</small>
@@ -109,58 +117,50 @@
 				<div class="row">
 					<div class="col-md-12 m-b">
 						<div class="panel-group payments-method" id="accordion">
-							{#<div class="panel panel-default">
-								<div class="panel-heading">
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingOne">
 									<div class="pull-right">
 										<i class="fa fa-cc-paypal text-success"></i>
 									</div>
-									<h5 class="panel-title">
-										<a data-toggle="collapse" data-parent="#accordion"
-											href="#collapseOne">PayPal</a>
-									</h5>
+									<h4 class="panel-title">
+										<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+											PayPal
+										</a>
+									</h4>
 								</div>
-								<div id="collapseOne" class="panel-collapse collapse in">
+								<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 									<div class="panel-body">
-										<div class="row text-center">
-											<div id="error-message-paypal" class="text-danger">{% if response.paypalerror is defined and response.paypalerror is not empty %}{{ response.paypalerror }}{% endif %}</div>
-											<br/>
-										</div>
-										<form id="paypal-checkout-form" action="#" method="post">
-											<div class="row">
-												<div class="col-md-10">
-													<h2>Charge</h2>
-													<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
-	
-													<p class="m-t">Get your social media marketing for
-														less than your weekly coffee cost.</p>
-													<div id="paypal-container"></div>
-													{-#<button class="btn btn-success">
-														<i class="fa fa-paypal"> </i> Use PayPal
-													</button>#-}
-												</div>
+										<div class="row">
+											<div class="col-md-10">
+												<h2>Charge</h2>
+												<h3 class="text-navy">${{ response.planDetail.price | default('20.00') }}/mo</h3>
+												<p class="m-t">
+													Get your social media marketing for less than your weekly coffee cost.
+												</p>
+												<button class="btn btn-success" id="paypal-button">
+													<i class="fa fa-paypal"> </i> Subscribe via PayPal
+												</button>
 											</div>
-										</form>
+										</div>
 									</div>
 								</div>
-							</div>#}
+							</div>
 							<div class="panel panel-default">
-								<div class="panel-heading">
+								<div class="panel-heading" role="tab" id="headingTwo">
 									<div class="pull-right">
-										<i class="fa fa-cc-visa text-success"></i> <i
-											class="fa fa-cc-amex text-primary"></i> <i
-											class="fa fa-cc-mastercard text-warning"></i> <i
-											class="fa fa-cc-discover text-danger"></i>
+										<i class="fa fa-cc-visa text-success"></i>
+										<i class="fa fa-cc-amex text-primary"></i>
+										<i class="fa fa-cc-mastercard text-warning"></i>
+										<i class="fa fa-cc-discover text-danger"></i>
 									</div>
-									<h5 class="panel-title"><a>Credit Card</a>
-										{#<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Credit Card</a>#}
+									<h5 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+											Credit Card
+										</a>
 									</h5>
 								</div>
-								<div id="collapseTwo" class="panel-collapse collapse in">
+								<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 									<div class="panel-body">
-										<div class="row text-center">
-											<div id="error-message" class="text-danger">{% if response.error is defined and response.error is not empty %}{{ response.error }}{% endif %}</div>
-											<br/>
-										</div>
 										<div class="row">
 											<div class="col-md-4">
 												<h2>Charge</h2>
@@ -168,17 +168,13 @@
 												{#% if response.planDetail.trialDuration is defined and response.planDetail.trialDuration is not empty %}
 													<p class="m-t">{{ response.planDetail.trialDuration | default('0') }} {{ response.planDetail.trialDurationUnit | default('0') }} Free trial.</p>
 												{% endif %#}
-													
-												{#<p class="m-t">Get your social media marketing for
-													less than your weekly coffee cost.</p>#}
-
 											</div>
 											<div class="col-md-8">
-												<form id="checkout-form" action="#" method="post">
+												<form id="checkout-form" action="{{ path('db_postreach_register_select_payment_method') }}" method="post">
 													<div class="row">
 														<div class="col-xs-12">
 															<div class="form-group">
-																<label>CARD NUMBER</label>
+																<label for="card-number">CARD NUMBER</label>
 																<div class="input-group">
 																	<div id="card-number" class="form-control hosted-field"></div>
 																	<span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
@@ -189,20 +185,20 @@
 													<div class="row">
 														<div class="col-xs-7 col-md-7">
 															<div class="form-group">
-																<label>EXPIRATION DATE</label>
+																<label for="expiration-date">EXPIRATION DATE</label>
 																<div class="form-control hosted-field" id="expiration-date"></div>
 															</div>
 														</div>
 														<div class="col-xs-5 col-md-5 pull-right">
 															<div class="form-group">
-																<label>CV CODE</label>
+																<label for="cvv">CV CODE</label>
 																<div class="form-control hosted-field" id="cvv"></div>
 															</div>
 														</div>
 													</div>
 													<div class="row">
 														<div class="col-xs-12">
-															<input id="use-credic-card-btn" class="btn btn-success" type="submit" disabled="disabled" value="Use Credit Card"></button>
+															<input class="btn btn-success" type="submit" disabled="disabled" value="Subscribe"></button>
 														</div>
 													</div>
 												</form>
@@ -246,14 +242,18 @@
 <!-- Load the Client component. -->
 <script src="https://js.braintreegateway.com/web/3.6.2/js/client.min.js"></script>
 
+<!-- Load the PayPal component. -->
+<script src="https://js.braintreegateway.com/web/3.6.2/js/paypal.min.js"></script>
+
 <!-- Load the Hosted Fields component. -->
 <script src="https://js.braintreegateway.com/web/3.6.2/js/hosted-fields.min.js"></script>
 
 <script type="text/javascript">
 	var authorization = '{{ response.clientToken }}';
 	var form = document.querySelector('#checkout-form');
-	var submit = document.querySelector('input#use-credic-card-btn[type="submit"]');
-	
+	//var submit = document.querySelector('input#use-credic-card-btn[type="submit"]');
+	var submit = document.querySelector('input[type="submit"][value="Subscribe"]');
+	var paypalButton = document.querySelector('#paypal-button');
 	braintree.client.create({
 	  		authorization: authorization
 		}, function(err, clientInstance) {
@@ -262,6 +262,7 @@
 	    		return;
 	  		}
 	  	createHostedFields(clientInstance);
+		createPaypalComponent(clientInstance);
 	});
 
 	function createHostedFields(clientInstance) {
@@ -330,6 +331,63 @@
 	        	});
 	      	}, false);
 	    });
+	}
+	
+	function createPaypalComponent(clientInstance){
+		// Create a PayPal component.
+		braintree.paypal.create({
+			client: clientInstance
+		}, function (paypalErr, paypalInstance) {
+
+			// Stop if there was a problem creating PayPal.
+			// This could happen if there was a network error or if it's incorrectly
+			// configured.
+			if (paypalErr) {
+				console.error('Error creating PayPal:', paypalErr);
+				return;
+			}
+
+			// Enable the button.
+			paypalButton.removeAttribute('disabled');
+
+			// When the button is clicked, attempt to tokenize.
+			paypalButton.addEventListener('click', function (event) {
+
+				// Because tokenization opens a popup, this has to be called as a result of
+				// customer action, like clicking a button—you cannot call this at any time.
+				paypalInstance.tokenize({
+					flow: 'vault'
+				}, function (tokenizeErr, payload) {
+
+					// Stop if there was an error.
+					if (tokenizeErr) {
+						document.querySelector('div#error-message').innerText = tokenizeErr.message;
+						return;
+					}
+					// Tokenization succeeded!
+					paypalButton.setAttribute('disabled', true);
+					
+	          		$('#bt-loader').modal({backdrop: 'static', keyboard: false});
+					$.post($('#base-path').attr('data-url') + "update-payment-method", 
+    	          		{paymentMethodNonce: payload.nonce}, 
+    	          		function(data) {
+    	          			if(data.response.error) {
+    	                		window.location.href = data.response.error.action;
+    	        	    	} else {
+    	        	    		if(data.response.error) {
+    	        	    			document.querySelector('div#error-message').innerText = data.response.error;
+    	        	    		} else {
+    	        	    			$('#modal-form').modal('hide');
+    	        	    			location.reload();
+        	        	    	}
+    	        	    	}
+          	        		$('#bt-loader').modal('hide');
+          	    		}
+	          	    );
+				});
+
+			}, false);
+		});
 	}
 </script>
 {#

@@ -74,6 +74,18 @@ class Account extends BaseEntity {
 	 private $btCardtoken;
 	 
 	 /**
+	  * @var string btPaymentMethod
+	  * @ORM\Column(name="btPaymentMethod", type="string", length=32)
+	  */	 
+	 private $btPaymentMethod;
+	 
+	 /**
+	  * @var string btPaypalEmail
+	  * @ORM\Column(name="btPaypalEmail", type="string", length=255)
+	  */	 
+	 private $btPaypalEmail;
+	 
+	 /**
 	  * @var string btCreditCardNo
 	  * @ORM\Column(name="btCreditCardNo", type="string", length=50)
 	  */	 
@@ -301,6 +313,46 @@ class Account extends BaseEntity {
 	  */
 	 public function getBtCardtoken() {
 	 	return $this->btCardtoken;
+	 }
+	 
+	 /**
+	  * Set btPaymentMethod
+	  *
+	  * @param string btPaymentMethod
+	  * @return Account
+	  */
+	 public function setBtPaymentMethod($btPaymentMethod) {
+	 	$this->btPaymentMethod = $btPaymentMethod;
+	 	return $this;
+	 }
+	 
+	 /**
+	  * Get btPaymentMethod
+	  *
+	  * @return string btPaymentMethod
+	  */
+	 public function getBtPaymentMethod() {
+	 	return $this->btPaymentMethod;
+	 }
+	 
+	 /**
+	  * Set btPaypalEmail
+	  *
+	  * @param string btPaypalEmail
+	  * @return Account
+	  */
+	 public function setBtPaypalEmail($btPaypalEmail) {
+	 	$this->btPaypalEmail = $btPaypalEmail;
+	 	return $this;
+	 }
+	 
+	 /**
+	  * Get btPaypalEmail
+	  *
+	  * @return string btPaypalEmail
+	  */
+	 public function getBtPaypalEmail() {
+	 	return $this->btPaypalEmail;
 	 }
 	 
 	 /**

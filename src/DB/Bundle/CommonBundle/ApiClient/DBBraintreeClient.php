@@ -13,6 +13,8 @@ use Braintree\PaymentMethod;
 use DB\Bundle\CommonBundle\Util\DBUtil;
 use Braintree\TransactionSearch;
 use Braintree\Exception\NotFound;
+use Braintree\CreditCard;
+use Braintree\PayPalAccount;
 /**
  * This class is call braintree API and return response as it is
  * @author patildipakr
@@ -79,17 +81,35 @@ class DBBraintreeClient {
 		$param['creditCard'] = array();
 		$param['paymentMethodNonce'] = $customerDetail['paymentMethodNonce'];
 		$result = Customer::create($param);
-		
+
 		$response = array();
 		if ($result->success) {
 			$customer = array();
-			$customer['id'] 			= $result->customer->id;
-			$customer['cardToken'] 		= $result->customer->creditCards[0]->token;
-			$customer['creditCardNo'] 	= $result->customer->paymentMethods[0]->maskedNumber;
-			$customer['expirationDate'] = $result->customer->paymentMethods[0]->expirationDate;
-			$customer['cardType'] 		= $result->customer->paymentMethods[0]->cardType;
+			// Set default values.
+			$customer['paymentMethod'] = '';
+			$customer['cardToken'] = '';
+			$customer['paypalEmail'] = '';
+			$customer['creditCardNo'] = '';
+			$customer['expirationDate'] = '';
+			$customer['cardType'] = '';
 			
+			$customer['id']	= $result->customer->id;
+			
+			$paymentMethod = $result->customer->paymentMethods[0];
+			if($paymentMethod instanceof CreditCard){
+				$customer['paymentMethod'] = 'creditcard';
+				$customer['creditCardNo'] 	= $paymentMethod->maskedNumber;
+				$customer['expirationDate'] = $paymentMethod->expirationDate;
+				$customer['cardType'] 		= $paymentMethod->cardType;
+				
+			}else if($paymentMethod instanceof PayPalAccount){
+				$customer['paymentMethod'] = 'paypal';
+				$customer['paypalEmail'] 	= $paymentMethod->email;
+				
+			}
+			$customer['cardToken'] 	= $paymentMethod->token;
 			$response['customer'] 	= $customer;
+			
 		} else {
 			$errorDetail = array();
 			foreach ($result->errors->deepAll() as $error) {
@@ -116,28 +136,64 @@ class DBBraintreeClient {
 		/* if(!isset($customerDetail['billingZipCode']) || empty($customerDetail['billingZipCode'])) {
 			return array();
 		} */
-
+		
+		$response = array();
+		
 		$param = array();
 		if(!empty($customerDetail['billingZipCode'])) {
 			$param['creditCard']['billingAddress']['postalCode'] 	= $customerDetail['billingZipCode'];
 		}
 		
+		// Create a new payment method, set it as default.
 		if(isset($customerDetail['paymentMethodNonce']) && !empty($customerDetail['paymentMethodNonce'])) {
-			$param['paymentMethodNonce'] = $customerDetail['paymentMethodNonce'];
+			$pm = [
+				'customerId' => $customerDetail['btCustomerId'],
+				'paymentMethodNonce' => $customerDetail['paymentMethodNonce'],
+				'options'=> [
+					'makeDefault' => true
+				]
+			];
+			$pmResult = PaymentMethod::create($pm);
+			
+			if($pmResult->success){
+				$customer = array();
+				$customer['paymentMethod'] = ' ';
+				$customer['cardToken'] = ' ';
+				$customer['paypalEmail'] = ' ';
+				$customer['creditCardNo'] = ' ';
+				$customer['expirationDate'] = ' ';
+				$customer['cardType'] = ' ';
+				
+				$customer['id'] 			= $customerDetail['btCustomerId'];
+				
+				if($pmResult->paymentMethod instanceof CreditCard){
+					$customer['paymentMethod'] = 'creditcard';
+					$customer['creditCardNo'] 	= $pmResult->paymentMethod->maskedNumber;
+					$customer['expirationDate'] = $pmResult->paymentMethod->expirationDate;
+					$customer['cardType'] 		= $pmResult->paymentMethod->cardType;
+					
+				}else if($pmResult->paymentMethod instanceof PayPalAccount){
+					$customer['paymentMethod'] = 'paypal';
+					$customer['paypalEmail'] 	= $pmResult->paymentMethod->email;
+					
+				}
+				$customer['cardToken'] 		= $pmResult->paymentMethod->token;
+				$response['customer'] 		= $customer;
+				
+				$param['defaultPaymentMethodToken'] = $customer['cardToken'];
+			}else{
+				$errorDetail = array();
+				foreach ($result->errors->deepAll() as $error) {
+					$errorDetail[] = $error->message;
+				}
+				$response['error'] = $errorDetail;
+			}
 		}
 		
-		$response = array();
 		if(!empty($param)) {
 			$result = Customer::update($customerDetail['btCustomerId'], $param);
 			if ($result->success) {
-				$customer = array();
-				$customer['id'] 			= $result->customer->id;
-				$customer['cardToken'] 		= $result->customer->creditCards[0]->token;
-				$customer['creditCardNo'] 	= $result->customer->paymentMethods[0]->maskedNumber;
-				$customer['expirationDate'] = $result->customer->paymentMethods[0]->expirationDate;
-				$customer['cardType'] 		= $result->customer->paymentMethods[0]->cardType;
 				
-				$response['customer'] 		= $customer;
 			} else {
 				$errorDetail = array();
 				foreach ($result->errors->deepAll() as $error) {
@@ -309,6 +365,9 @@ class DBBraintreeClient {
 		//Set subscription data
 		if(isset($subscriptionDetail['addOnProductList']) && !empty($subscriptionDetail['addOnProductList'])) {
 			$param['addOns'] = $subscriptionDetail['addOnProductList'];
+		}
+		if(isset($subscriptionDetail['paymentMethodToken']) && !empty($subscriptionDetail['paymentMethodToken'])) {
+			$param['paymentMethodToken'] = $subscriptionDetail['paymentMethodToken'];
 		}
 			
 		//print_r($param);exit;

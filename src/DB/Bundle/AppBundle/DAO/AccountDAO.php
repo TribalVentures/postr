@@ -169,7 +169,6 @@ class AccountDAO extends BaseDAO {
 		}
 		
 		$record = array();
-		
 		//Set defautl data		
 		if(!empty($accountDetail['account'])) {
 			$record['account'] = $accountDetail['account'];
@@ -205,6 +204,14 @@ class AccountDAO extends BaseDAO {
 
 		if(!empty($accountDetail['btCardtoken'])) {
 			$record['btCardtoken'] = $accountDetail['btCardtoken'];
+		}
+		
+		if(!empty($accountDetail['btPaypalEmail'])) {
+			$record['btPaypalEmail'] = $accountDetail['btPaypalEmail'];
+		}
+		
+		if(!empty($accountDetail['btPaymentMethod'])) {
+			$record['btPaymentMethod'] = $accountDetail['btPaymentMethod'];
 		}
 		
 		if(!empty($accountDetail['btCreditCardNo'])) {
@@ -277,6 +284,10 @@ class AccountDAO extends BaseDAO {
 			$accountParam = array();
 			$accountParam['accountId'] 			= $accountDetail['accountId'];
 			
+			$accountParam['btPaymentMethod'] 	= $customer['customer']['paymentMethod'];
+			
+			$accountParam['btPaypalEmail'] 		= $customer['customer']['paypalEmail'];
+			
 			$accountParam['btCustomerId'] 		= $customer['customer']['id'];
 			$accountParam['btCardtoken'] 		= $customer['customer']['cardToken'];
 
@@ -295,11 +306,10 @@ class AccountDAO extends BaseDAO {
 						$subscriptionDetail['planId'] = $accountDetail['btPlanId'];
 					} else {
 						$subscriptionDetail['planId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
-						//$accountParam['btPlanId'] = ''; 
 					}
 				} else {
-					$subscriptionDetail['planId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
-					//$accountParam['btPlanId'] = '';
+					$accountParam['btPlanId'] = Config::getSParameter('BRAINTREE_PLAN_ID');
+					$subscriptionDetail['planId'] = $accountParam['btPlanId'];
 				}
 
 				$subscription = $dbBraintreeClient->createSubscription($subscriptionDetail);
@@ -307,6 +317,11 @@ class AccountDAO extends BaseDAO {
 				if(isset($subscription['subscription']['id'])) {
 					$accountParam['btSubscriptionId'] = $subscription['subscription']['id'];
 				}
+			}else{
+				$subscriptionDetail = array();
+				$subscriptionDetail['subscriptionId'] = $accountDetail['btSubscriptionId'];
+				$subscriptionDetail['paymentMethodToken'] = $accountParam['btCardtoken'];
+				$dbBraintreeClient->updateSubscription($subscriptionDetail);
 			}
 			
 			$accountDetail = $this->editAccount($accountParam);
