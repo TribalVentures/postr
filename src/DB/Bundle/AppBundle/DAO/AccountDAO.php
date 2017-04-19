@@ -368,7 +368,7 @@ class AccountDAO extends BaseDAO {
 		$em = $this->getDoctrine()->getManager();
 	
 		//$from for entity name (table name)
-		$from = "DB\\Bundle\\AppBundle\Entity\\Account account LEFT JOIN account.account_param account_param , DB\\Bundle\\AppBundle\Entity\\User user ";
+		$from = "DB\\Bundle\\AppBundle\Entity\\Account account LEFT JOIN DB\\Bundle\\AppBundle\Entity\\AccountParam account_param with account.accountId=account_param.accountId, DB\\Bundle\\AppBundle\Entity\\User user ";
 		
 		$whereCondition = "account.accountId = user.accountId ";
 		
@@ -421,9 +421,19 @@ class AccountDAO extends BaseDAO {
 		$result = $query->setFirstResult($paggingDetails['MYSQL_LIMIT1'])->setMaxResults($paggingDetails['MYSQL_LIMIT2']);
 		$result = $query->getResult();
 		
+		// Get braintree client.
+		$dbBraintreeClient = new DBBraintreeClient(Config::getSParameter('BRAINTREE_ENVIRONMENT'),
+				Config::getSParameter('BRAINTREE_MERCHANT_ID'), Config::getSParameter('BRAINTREE_PUBLIC_KEY'),
+				Config::getSParameter('BRAINTREE_PRIVATE_KEY'));
+		
 		//make event type
 		if(!empty($result)) {
 			for($index = 0; $index < count($result); $index ++) {
+				$result[$index]['btPlanName'] = '';
+				$plan = $dbBraintreeClient->getPlan($result[$index]['btPlanId']);
+				if(!empty($plan)){
+					$result[$index]['btPlanName'] = $plan['name'];
+				}
 				$result[$index]['createdAt'] = $result[$index]['creationDate']->format('Y-m-d');
 				$result[$index]['lastUpdatedAt'] = $result[$index]['endDate']->format('Y-m-d');
 			}

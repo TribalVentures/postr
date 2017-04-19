@@ -83,17 +83,17 @@
 										{% elseif account.btPaymentMethod == 'paypal' %}
 											PayPal
 										{% else %}
-											NA {{account.btPaymentMethod}}
+											NA
 										{% endif %}
 									</td>
 									<td>
-										{% if account.btPlanId is not empty %}
-											{{ account.btPlanId }})
-											{% if account.discountCode is not empty %}
-												<b>*</b>
-											{% endif %}
+										{% if account.btPlanName is not empty %}
+											{{ account.btPlanName }}
 										{% else %}
 											NA
+										{% endif %}
+										{% if account.discountCode is not empty %}
+											<b>*</b>
 										{% endif %}
 									</td>
 									<td>
@@ -124,7 +124,9 @@
 						{% endif %}
 					</tbody>
 				</table>
-				<div style="text-align: right;">* Indicates user subscribed with a discount code.</div>
+				{% if response.hasDiscountCode == true %}
+				<div style="text-align: left;">* Indicates user subscribed with a discount code.</div>
+				{% endif %}
 				{% if response.accountList.PAGING is defined and response.accountList.PAGING is not empty  %}
 					<div align="center">
 						<ul class="pagination">
