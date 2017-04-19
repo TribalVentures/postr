@@ -134,6 +134,17 @@ class AccountController extends DbAppController {
 		$accountDAO = new AccountDAO($this->getDoctrine());
 		
 		$accountList = $accountDAO->getAccountList($accountForm['search'], $accountForm['currentPage'], $options);
+		
+		// Set variable to determine if we show the discount code asteric.
+		$hasDiscountCode = false;
+		if(!empty($accountList['LIST'])) {
+			for($index = 0; $index < count($accountList['LIST']); $index ++) {
+				if($accountList['LIST'][$index]['discountCode'] != ''){
+					$hasDiscountCode = true;
+				}
+			}
+		}
+		$this->addInResponse('hasDiscountCode', $hasDiscountCode);
 		$this->addInResponse('accountList', $accountList);
 		
 		//get braitnree environment

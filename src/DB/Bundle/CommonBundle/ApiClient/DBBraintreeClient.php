@@ -26,6 +26,9 @@ class DBBraintreeClient {
 	private $publicKey = '';
 	private $privateKey = '';
 	
+	// local plan list, so we can cache the results from braintree.
+	private $planList = false;
+	
 	/**
 	 * This method create braintree client object with initialise the environment
 	 * @param string $environment
@@ -261,9 +264,11 @@ class DBBraintreeClient {
 		$fieldList = explode(',', $fieldList);
 		$planDetailList = array();
 		
-		$planList = Plan::all();
-		if(!empty($planList)) {
-			foreach($planList as $plan) {
+		if(!$this->planList){
+			$this->planList = Plan::all();
+		}
+		if(!empty($this->planList)) {
+			foreach($this->planList as $plan) {
 				$record = array();
 				foreach($fieldList as $field) {
 					$field = trim($field);
