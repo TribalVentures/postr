@@ -368,7 +368,7 @@ class AccountDAO extends BaseDAO {
 		$em = $this->getDoctrine()->getManager();
 	
 		//$from for entity name (table name)
-		$from = "DB\\Bundle\\AppBundle\Entity\\Account account, DB\\Bundle\\AppBundle\Entity\\User user ";
+		$from = "DB\\Bundle\\AppBundle\Entity\\Account account LEFT JOIN account.account_param account_param , DB\\Bundle\\AppBundle\Entity\\User user ";
 		
 		$whereCondition = "account.accountId = user.accountId ";
 		
@@ -401,7 +401,9 @@ class AccountDAO extends BaseDAO {
 		$sql = "SELECT account.accountId, account.account, account.businessTypeId, " .
 				"account.creationDate, account.endDate, account.apiKey, account.accountStatus, " .
 				"account.btCustomerId, account.btCardtoken, account.btCreditCardNo, " .
+				"account.btPaymentMethod, account.btPlanId, " .
 				"account.btExpirationDate, account.btCardType, account.btSubscriptionId, " . 
+				"account_param.discountCode, account_param.sid, " . 
 				"user.firstName, user.lastName, user.email  " .
 				"  " .
 			"FROM " . $from;

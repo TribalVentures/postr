@@ -115,6 +115,17 @@ class Account extends BaseEntity {
 	  */	 
 	 private $btSubscriptionId;
 	
+	
+    /**
+     * @var DB\Bundle\AppBundle\Entity\AccountParam
+     *
+     * @ORM\ManyToOne(targetEntity="DB\Bundle\AppBundle\Entity\AccountParam")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="accountId", referencedColumnName="accountId")
+     * })
+     */
+    private $account_param;
+	
 	/**
 	 * Set accountId
 	 *
