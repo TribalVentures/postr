@@ -1,3 +1,6 @@
+19 Apr 2017
+update account set btPaymentMethod = 'creditcard' where btCardType != '';
+
 8 Apr 2017
 ALTER TABLE `account` ADD `btPaypalEmail` VARCHAR(255) NULL AFTER `btCustomerId`; 
 

@@ -59,9 +59,10 @@
 							<th>#ID-Braintree ID</th>
 							<th>Account Name</th>
 							<th>Email</th>
-							<th>Card (Expiration)</th>
-							<th>Subscription</th>
+							<th>Payment Method</th>
+							<th>Plan</th>
 							<th>Status</th>
+							<th>Referrer</th>
 							<th style="text-align: right; white-space: nowrap;">Action</th>
 						</tr>
 					</thead>
@@ -77,15 +78,20 @@
 									<td>{{ account.account }}</td>
 									<td>{{ account.email }}</td>
 									<td>
-										{% if account.btCreditCardNo is not empty %}
+										{% if account.btPaymentMethod == 'creditcard' %}
 											{{ account.btCreditCardNo }} ({{ account.btExpirationDate }})
+										{% elseif account.btPaymentMethod == 'paypal' %}
+											PayPal
 										{% else %}
-											NA
+											NA {{account.btPaymentMethod}}
 										{% endif %}
 									</td>
 									<td>
-										{% if account.btSubscriptionId is not empty %}
-											{{ account.btSubscriptionId }})
+										{% if account.btPlanId is not empty %}
+											{{ account.btPlanId }})
+											{% if account.discountCode is not empty %}
+												<b>*</b>
+											{% endif %}
 										{% else %}
 											NA
 										{% endif %}
@@ -109,6 +115,7 @@
 											<span class="label label-danger">Canceled</span>
 										{% endif %}
 									</td>
+									<td>{{ account.sid }}</td>
 									<td style="text-align: right; white-space: nowrap;">
 										<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="{{ account.accountId }}"><i class="fa fa-times"></i></button>
 									</td>
@@ -117,6 +124,7 @@
 						{% endif %}
 					</tbody>
 				</table>
+				<div style="text-align: right;">* Indicates user subscribed with a discount code.</div>
 				{% if response.accountList.PAGING is defined and response.accountList.PAGING is not empty  %}
 					<div align="center">
 						<ul class="pagination">
