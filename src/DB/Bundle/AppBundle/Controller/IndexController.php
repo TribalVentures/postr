@@ -360,14 +360,21 @@ class IndexController extends DbAppController {
                 $user->setUserId($userDetail['userId']);
                 $userDAO->update($user, array('userStatus'=>UserDAO::USER_STATUS_ACTIVE));
 				//$userDAO->update(new User(), array('userId'=>$userDetail['userId'], 'userStatus'=>UserDAO::USER_STATUS_ACTIVE));
-				//Set account status status to send confirmation email
-				$accountDAO = new AccountDAO($this->getDoctrine());
-				$accountDAO->setAccountStatus($userDetail['accountId'], AccountDAO::ACCOUNT_STATUS_CONFIRM_DONE);
 				
 				$this->addInResponse('message', 'Your account has been successfully confirmed. Please login and let us get started for you!');
 			} else if($userDetail['userStatus'] == UserDAO::USER_STATUS_ACTIVE) {
 				$this->addInResponse('message', 'Your account is already confirmed, Please login and happy posting');
 			}
+			
+			// Update the account status IF the user is on the email confirmation step. 
+			$accountDAO = new AccountDAO($this->getDoctrine());
+			$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$userDetail['accountId']));
+			if(!empty($accountDetail)) {
+				if($accountDetail['accountStatus'] == AccountDAO::ACCOUNT_STATUS_CONFIRM_EMAIL_SEND){
+					$accountDAO->setAccountStatus($userDetail['accountId'], AccountDAO::ACCOUNT_STATUS_CONFIRM_DONE);
+				}
+			}
+			
 		} else {
 			$this->addInResponse('error', $errorMesage);
 		}
