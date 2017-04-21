@@ -3,6 +3,7 @@ namespace DB\Bundle\CommonBundle\ApiClient;
 
 use Braintree\Configuration;
 use Braintree\Plan;
+use Braintree\Discount;
 use Braintree\Customer;
 use Braintree\ClientToken;
 use Braintree\Subscription;
@@ -29,6 +30,8 @@ class DBBraintreeClient {
 	// local plan list, so we can cache the results from braintree.
 	private $planList = false;
 	
+	// local discount list, so we can cache the results from braintree.
+	private $discountList = false;
 	/**
 	 * This method create braintree client object with initialise the environment
 	 * @param string $environment
@@ -257,6 +260,55 @@ class DBBraintreeClient {
 	}
 	
 	/**
+	 * This function will return all discounts in you account
+	 */
+	public function getDiscountList() {
+		$fieldList = 'id,amount,currentBillingCycle,description,kind,name,neverExpires,numberOfBillingCycles,quantity';
+		$fieldList = explode(',', $fieldList);
+		$discountDetailList = array();
+		
+		if(!$this->discountList){
+			$this->discountList = Discount::all();
+		}
+		if(!empty($this->discountList)) {
+			foreach($this->discountList as $discount) {
+				$record = array();
+				foreach($fieldList as $field) {
+					$field = trim($field);
+					
+					if(isset($discount->$field)) {
+						$record[$field] = $discount->$field;
+					}
+				}
+				if(!empty($record)) {
+					$discountDetailList[] = $record;
+				}
+			}
+		}
+		return $discountDetailList;
+	}
+	
+	/**
+	 * This function will return a discount by Id.
+	 * @param stirng $discountId
+	 */
+	public function getDiscount($discountId) {
+		$discountList = $this->getDiscountList();
+		
+		$discountDetail = array();
+		if(!empty($discountList)) {
+			foreach($discountList as $discount) {
+				if($discountId == $discount['id']) {
+					$discountDetail = $discount;
+					break;
+				}
+			}
+		}
+		
+		return $discountDetail;
+	}
+	
+	/**
 	 * This dunction will return all plans exist in you account
 	 */
 	public function getPlanList() {
@@ -336,6 +388,14 @@ class DBBraintreeClient {
 		
 		if(isset($subscriptionDetail['addOnProductList']) && !empty($subscriptionDetail['addOnProductList'])) {
 			$param['addOns'] = $subscriptionDetail['addOnProductList'];
+		}
+		
+		if(isset($subscriptionDetail['discountCode']) && !empty($subscriptionDetail['discountCode'])) {
+			$param['discounts'] = [
+				'add' => [
+					['inheritedFromId'=>$subscriptionDetail['discountCode']]
+				]
+			];
 		}
 		
 		$result = Subscription::create($param);
@@ -489,6 +549,7 @@ class DBBraintreeClient {
 				$subscription['nextBillingPeriodAmount'] = $result->nextBillingPeriodAmount;
 				$subscription['planId'] = $result->planId;
 				$subscription['status'] = $result->status;
+				$subscription['discounts'] = $result->discounts;
 				$subscription['nextBillingDate'] = DBUtil::format($result->nextBillingDate, 'M d, Y');
 			}
 		} catch (NotFound $e) {
