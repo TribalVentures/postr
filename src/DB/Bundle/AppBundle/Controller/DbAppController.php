@@ -539,7 +539,7 @@ class DbAppController extends BaseController {
 		$this->removeSession(Config::COOKIE_KEY_SID);
 		
 		$discountCode = $this->getCookie(Config::COOKIE_KEY_DISCOUNT_COUPON);
-		if(!empty($sid)) {
+		if(!empty($discountCode)) {
 			$accountParam['discountCode'] = $discountCode;
 		} else {
 			$discountCode = $this->getSession(Config::COOKIE_KEY_DISCOUNT_COUPON);

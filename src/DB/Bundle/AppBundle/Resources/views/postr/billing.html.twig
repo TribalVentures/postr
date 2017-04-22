@@ -87,6 +87,18 @@
 						<small> <strong>Name:</strong> {{ response.accountDetail.account }}</small>
 					</div>
 				</div>
+				{% if response.subscription['discounts'] is defined and response.subscription['discounts'] is not empty %}
+				
+				{% for discount in response.subscription['discounts'] %}
+					<div class="row">
+						<div class="col-sm-6">
+							<small> <strong>Discount Code:</strong> {{ discount.id }} (${{ discount.amount }})</small>
+						</div>
+					</div>
+				{% endfor %}
+				
+
+				{% endif %}
 			</div>
 		</div>
 	{% endif %}

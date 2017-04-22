@@ -7,7 +7,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use DB\Bundle\AppBundle\DAO\UserDAO;
 use DB\Bundle\CommonBundle\Util\DBUtil;
 use DB\Bundle\AppBundle\DAO\AccountDAO;
+use DB\Bundle\AppBundle\DAO\AccountParamDAO;
 use DB\Bundle\AppBundle\Entity\Account;
+use DB\Bundle\AppBundle\Entity\AccountParam;
 use DB\Bundle\CommonBundle\Base\BaseController;
 use DB\Bundle\AppBundle\DAO\CategoryDAO;
 use DB\Bundle\AppBundle\DAO\AccountCategoryDAO;
@@ -643,14 +645,17 @@ class IndexController extends DbAppController {
 			return $this->sendRequest($route);
 		}
 		
+		// Load the current user
 		$currentUser = $this->getUser();
+
+		// Load current user account details. 
+		$accountDAO = new AccountDAO($this->getDoctrine());
+		$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 		
 		if($this->getRequest()->isMethod('POST')) {
 			$paymentMethodForm = $this->getRequestParam('paymentMethodForm', array());
 			
 			if(!empty($paymentMethodForm['paymentMethodNonce'])) {
-				$accountDAO = new AccountDAO($this->getDoctrine());
-				$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 				
 				if(!empty($accountDetail)) {
 					//Set name and contact detail of customer
@@ -667,42 +672,65 @@ class IndexController extends DbAppController {
 					
 					}
 					
-					$accountDetail['paymentMethodNonce'] = $paymentMethodForm['paymentMethodNonce'];
-					$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
+					if(!empty($paymentMethodForm['discountCode'])) {
+						$accountDetail['discountCode'] = $paymentMethodForm['discountCode'];
+					}else{
+						$accountDetail['discountCode'] = '';
+					}
 					
-					if(!empty($accountDetail['error'])) {
-						$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
+					$hasError = false;
+					
+					if($accountDetail['discountCode'] != ''){
+						// We need to verify that the discount code being used is valid. 
+						$dbBraintreeClient = new DBBraintreeClient(Config::getSParameter('BRAINTREE_ENVIRONMENT'),
+								Config::getSParameter('BRAINTREE_MERCHANT_ID'), Config::getSParameter('BRAINTREE_PUBLIC_KEY'),
+								Config::getSParameter('BRAINTREE_PRIVATE_KEY'));
+						$discountDetail = $dbBraintreeClient->getDiscount($accountDetail['discountCode']);
+						if(empty($discountDetail)){
+							// This is invalid discount code. 
+							$this->addInResponse('error', 'Invalid Discount Code.');
+							$hasError = true;
+						}
+					}
+					
+					if(!$hasError){
+						$accountDetail['paymentMethodNonce'] = $paymentMethodForm['paymentMethodNonce'];
+						$accountDetail = $accountDAO->updatePaymentMethod($accountDetail);
 						
-						//Send email to team about payment fail
-						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
-						$this->sendPaymentfailEmail($accountDetail, $currentUser);
-					} else {
-						//Redirect to thankyou page
-						//Check all braintree ids created or not
-						$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
-						
-						//check for customer is created in braintree 
-						if(empty($accountDetail) || empty($accountDetail['btCustomerId']) || empty($accountDetail['btSubscriptionId'])) {
+						if(!empty($accountDetail['error'])) {
 							$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 							
 							//Send email to team about payment fail
+							$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 							$this->sendPaymentfailEmail($accountDetail, $currentUser);
 						} else {
-							//Set account status as set category
-							$accountDAO = new AccountDAO($this->getDoctrine());
-							$accountDAO->setAccountStatus($currentUser['accountId'], AccountDAO::ACCOUNT_STATUS_PAYMENT_DONE);
+							//Redirect to thankyou page
+							//Check all braintree ids created or not
+							$accountDetail = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
 							
-							//Set status in session
-							if(isset($currentUser['account']['accountStatus'])) {
-								$currentUser['account'] = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
-								$this->setUser($currentUser);
+							//check for customer is created in braintree 
+							if(empty($accountDetail) || empty($accountDetail['btCustomerId']) || empty($accountDetail['btSubscriptionId'])) {
+								$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
+								
+								//Send email to team about payment fail
+								$this->sendPaymentfailEmail($accountDetail, $currentUser);
+							} else {
+								//Set account status as set category
+								$accountDAO = new AccountDAO($this->getDoctrine());
+								$accountDAO->setAccountStatus($currentUser['accountId'], AccountDAO::ACCOUNT_STATUS_PAYMENT_DONE);
+								
+								//Set status in session
+								if(isset($currentUser['account']['accountStatus'])) {
+									$currentUser['account'] = $accountDAO->findSingleDetailBy(new Account(), array('accountId'=>$currentUser['accountId']));
+									$this->setUser($currentUser);
+								}
+								
+								//Send notification to internal team
+								$userDetail = $this->getUser();
+								$this->sendRegistrationNotification($userDetail);
+								
+								return $this->sendRequest('db_postreach_register_thank_you');
 							}
-							
-							//Send notification to internal team
-							$userDetail = $this->getUser();
-							$this->sendRegistrationNotification($userDetail);
-							
-							return $this->sendRequest('db_postreach_register_thank_you');
 						}
 					}
 				}
@@ -710,6 +738,11 @@ class IndexController extends DbAppController {
 				$this->addInResponse('error', 'Unable to verify your payment information. Please try again or contact support.');
 			}
 		}
+		
+		// Load account param.
+		$accountParamDAO = new AccountParamDAO($this->getDoctrine());
+		$accountParamDetal = $accountParamDAO->findSingleDetailBy(new AccountParam(), array('accountId'=>$accountDetail['accountId']));
+		$this->addInResponse('accountParam', $accountParamDetal);
 		
 		//Create obejct of DBBraintreeClient
 		$dbBraintreeClient = new DBBraintreeClient(Config::getSParameter('BRAINTREE_ENVIRONMENT'),

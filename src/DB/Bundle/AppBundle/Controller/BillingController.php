@@ -8,7 +8,9 @@ use DB\Bundle\AppBundle\DAO\TransactionDAO;
 use DB\Bundle\CommonBundle\ApiClient\DBBraintreeClient;
 use DB\Bundle\AppBundle\Common\Config;
 use DB\Bundle\AppBundle\DAO\AccountDAO;
+use DB\Bundle\AppBundle\DAO\accountParamDAO;
 use DB\Bundle\AppBundle\Entity\Account;
+use DB\Bundle\AppBundle\Entity\AccountParam;
 
 class BillingController extends DbAppController {
 	/**
@@ -35,7 +37,7 @@ class BillingController extends DbAppController {
 		$dbBraintreeClient = new DBBraintreeClient(Config::getSParameter('BRAINTREE_ENVIRONMENT'),
 				Config::getSParameter('BRAINTREE_MERCHANT_ID'), Config::getSParameter('BRAINTREE_PUBLIC_KEY'),
 				Config::getSParameter('BRAINTREE_PRIVATE_KEY'));
-		
+
 		$clientToken = $dbBraintreeClient->getClientToken();
 		
 		$this->addInResponse('clientToken', $clientToken);
@@ -69,7 +71,8 @@ class BillingController extends DbAppController {
 			$this->setUser($currentUser);
 		}
 		
-		if(!isset($currentUser['subscription']) && !empty($currentUser['account']['btSubscriptionId'])) {
+		if(!empty($currentUser['account']['btSubscriptionId'])) {
+			
 			$subscription = $dbBraintreeClient->findSubscription($currentUser['account']['btSubscriptionId']);
 			if(empty($subscription['error'])) {
 				$currentUser['subscription'] = $subscription;

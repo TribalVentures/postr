@@ -64,26 +64,26 @@ class AccountParamDAO extends BaseDAO {
 	
 	/**
 	 * This function edit account parameters
-	 * @param array $accountParam
+	 * @param array $accountParamDetail
 	 */
-	public function editAccontParam($accountParam = array()) {
-		if(empty($accountParam)) {
+	public function editAccontParam($accountParamDetail = array()) {
+		if(empty($accountParamDetail)) {
 			return false;
 		}
 		
 		$record = array();
 		
 		//Set defautl data
-		if(!empty($accountParam['discountCode'])) {
-			$record['discountCode'] = $accountParam['discountCode'];
+		if(array_key_exists('discountCode', $accountParamDetail)) {
+			$record['discountCode'] = $accountParamDetail['discountCode'];
 		}
 		
-		if(!empty($accountParam['sid'])) {
-			$record['sid'] = $accountParam['sid'];
+		if(!empty($accountParamDetail['sid'])) {
+			$record['sid'] = $accountParamDetail['sid'];
 		}
 		
-		if(!empty($accountParam['lastUpdate'])) {
-			$record['lastUpdate'] = $accountParam['lastUpdate'];
+		if(!empty($accountParamDetail['lastUpdate'])) {
+			$record['lastUpdate'] = $accountParamDetail['lastUpdate'];
 		} else {
 			$record['lastUpdate'] = new \DateTime();
 		}
@@ -91,7 +91,7 @@ class AccountParamDAO extends BaseDAO {
 		$updateDetail = array();
 		if(!empty($record)) {
 			$accountParam = new AccountParam();
-			$accountParam->setId($accountParam['id']);
+			$accountParam->setId($accountParamDetail['id']);
 				
 			$accountParam = $this->update($accountParam, $record);
 				

@@ -12,6 +12,7 @@ use DB\Bundle\AppBundle\Entity\SocialPostMetric;
 use DB\Bundle\CommonBundle\ApiClient\DBBraintreeClient;
 use DB\Bundle\AppBundle\Entity\ArticleNotifyHistory;
 use DB\Bundle\AppBundle\Entity\AccountFrequency;
+use DB\Bundle\AppBundle\DAO\AccountParamDAO;
 /**
  * Class For Account DAO, This class is responsible for manage database 
  * operation for account table/entity
@@ -299,6 +300,12 @@ class AccountDAO extends BaseDAO {
 			if($isCreate || empty($accountDetail['btSubscriptionId'])) {
 				$subscriptionDetail = array();
 				$subscriptionDetail['paymentMethodToken'] = $accountParam['btCardtoken'];
+				
+				// Set the discount code. 
+				if(isset($accountDetail['discountCode']) && !empty($accountDetail['discountCode'])) {
+					$subscriptionDetail['discountCode'] = $accountDetail['discountCode'];
+				}
+				
 				if(!empty($accountDetail['btPlanId'])) {
 					//Check plan id s valid or not
 					$planDetail = $dbBraintreeClient->getPlan($accountDetail['btPlanId']);
@@ -321,7 +328,16 @@ class AccountDAO extends BaseDAO {
 				$subscriptionDetail = array();
 				$subscriptionDetail['subscriptionId'] = $accountDetail['btSubscriptionId'];
 				$subscriptionDetail['paymentMethodToken'] = $accountParam['btCardtoken'];
+				
 				$dbBraintreeClient->updateSubscription($subscriptionDetail);
+			}
+			
+			if(array_key_exists('discountCode', $accountDetail)) {
+				$accountParamDetail = [];
+				$accountParamDetail['accountId'] = $accountDetail['accountId'];
+				$accountParamDetail['discountCode'] = $accountDetail['discountCode'];
+				$accountParamDAO = new AccountParamDAO($this->getDoctrine());
+				$accountParamDAO->manageAccountParameter($accountParamDetail);
 			}
 			
 			$accountDetail = $this->editAccount($accountParam);
