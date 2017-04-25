@@ -13,6 +13,7 @@ use DB\Bundle\CommonBundle\ApiClient\DBBraintreeClient;
 use DB\Bundle\AppBundle\Entity\ArticleNotifyHistory;
 use DB\Bundle\AppBundle\Entity\AccountFrequency;
 use DB\Bundle\AppBundle\DAO\AccountParamDAO;
+use DB\Bundle\AppBundle\DAO\AccountFrequencyDAO;
 /**
  * Class For Account DAO, This class is responsible for manage database 
  * operation for account table/entity
@@ -384,7 +385,12 @@ class AccountDAO extends BaseDAO {
 		$em = $this->getDoctrine()->getManager();
 	
 		//$from for entity name (table name)
-		$from = "DB\\Bundle\\AppBundle\Entity\\Account account LEFT JOIN DB\\Bundle\\AppBundle\Entity\\AccountParam account_param with account.accountId=account_param.accountId, DB\\Bundle\\AppBundle\Entity\\User user ";
+		$from = "DB\\Bundle\\AppBundle\Entity\\Account account ";
+		$from.= "LEFT JOIN DB\\Bundle\\AppBundle\Entity\\AccountParam account_param ";
+		$from.= "with account.accountId=account_param.accountId ";
+		$from.= "LEFT JOIN DB\\Bundle\\AppBundle\Entity\\AccountFrequency account_frequency ";
+		$from.= "with account.accountId=account_frequency.accountId, ";
+		$from.= "DB\\Bundle\\AppBundle\Entity\\User user ";
 		
 		$whereCondition = "account.accountId = user.accountId ";
 		
@@ -420,6 +426,7 @@ class AccountDAO extends BaseDAO {
 				"account.btPaymentMethod, account.btPlanId, " .
 				"account.btExpirationDate, account.btCardType, account.btSubscriptionId, " . 
 				"account_param.discountCode, account_param.sid, " . 
+				"account_frequency.category, account_frequency.frequency, account_frequency.timezone," . 
 				"user.firstName, user.lastName, user.email  " .
 				"  " .
 			"FROM " . $from;
@@ -442,6 +449,8 @@ class AccountDAO extends BaseDAO {
 				Config::getSParameter('BRAINTREE_MERCHANT_ID'), Config::getSParameter('BRAINTREE_PUBLIC_KEY'),
 				Config::getSParameter('BRAINTREE_PRIVATE_KEY'));
 		
+		$accountFrequencyDAO = new AccountFrequencyDAO($this->getDoctrine());
+		
 		//make event type
 		if(!empty($result)) {
 			for($index = 0; $index < count($result); $index ++) {
@@ -452,6 +461,8 @@ class AccountDAO extends BaseDAO {
 				}
 				$result[$index]['createdAt'] = $result[$index]['creationDate']->format('Y-m-d');
 				$result[$index]['lastUpdatedAt'] = $result[$index]['endDate']->format('Y-m-d');
+				$result[$index]['frequency_string'] = $accountFrequencyDAO->getFrequencyReadable($result[$index]['frequency']);
+				
 			}
 		}
 	

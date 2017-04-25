@@ -239,5 +239,53 @@ class AccountFrequencyDAO extends BaseDAO {
 	
 		return $frequencyDetail;
 	}
+	
+	/**
+	 * This function returns frequncy in human readable format
+	 * @param string $frequency
+	 */
+	public function getFrequencyReadable($frequency) {
+		
+		if(empty($frequency)){
+			return '';
+		}
+		
+		$frequencyString = '';
+		
+		$frequencyList = DBUtil::strToArray($frequency);
+		
+		if(isset($frequencyList[0])) {
+			$frequencyString.= 'Su ';
+		}
+		
+		if(isset($frequencyList[1])) {
+			$frequencyString.= 'M ';
+		}
+		
+		if(isset($frequencyList[2])) {
+			$frequencyString.= 'Tu ';
+		}
+		
+		if(isset($frequencyList[3])) {
+			$frequencyString.= 'W ';
+		}
+		
+		if(isset($frequencyList[4])) {
+			$frequencyString.= 'Th ';
+		}
+		
+		if(isset($frequencyList[5])) {
+			$frequencyString.= 'F ';
+		}
+		
+		if(isset($frequencyList[6])) {
+			$frequencyString.= 'Sa ';
+		}
+		
+		// Trim and add commas
+		$frequencyString = str_replace(' ', ',', trim($frequencyString));
+		
+		return $frequencyString;
+	}
 }
 ?>
