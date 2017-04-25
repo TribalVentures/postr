@@ -61,6 +61,8 @@
 							<th>Email</th>
 							<th>Payment Method</th>
 							<th>Plan</th>
+							<th>Notification Type</th>
+							<th>Time Zone</th>
 							<th>Status</th>
 							<th>Referrer</th>
 							<th style="text-align: right; white-space: nowrap;">Action</th>
@@ -94,6 +96,21 @@
 										{% endif %}
 										{% if account.discountCode is not empty %}
 											<b>*</b>
+										{% endif %}
+									</td>
+									<td>
+										{% if account.category is not empty %}
+											{{ account.category }} -
+										{% endif %}
+										{% if account.frequency_string is not empty %}
+											{{ account.frequency_string }}
+										{% endif %}
+									</td>
+									<td>
+										{% if account.timezone is not empty %}
+											{{ account.timezone }}
+										{% else %}
+											NA
 										{% endif %}
 									</td>
 									<td>
