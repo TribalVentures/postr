@@ -443,7 +443,9 @@ class SocialPostDAO extends BaseDAO {
 		$socialPostId = '';
 		$socialPostDetail = array();
 		$socialPostDetail['accountId'] = $accountId;
-		
+		$response = array();
+		$isException = false;
+		$errorMessage = '';
 		//Send message to facebook
 		$socialPostDetail['message'] = '';
 		if(!empty($articleDetail['caption'])) {
@@ -480,16 +482,21 @@ class SocialPostDAO extends BaseDAO {
 			}
 		}
 		
-		$response = array();
+		
 		$socialPostresponse = $this->postSocialmessage($accountId);
-		$isException = false;
+		
 		if(!empty($socialPostresponse)) {
 			foreach($socialPostresponse as $socialResponse) {
 				if(!empty($socialResponse['exception'])) {
 					$isException = true;
+					if($errorMessage != ''){
+						$errorMessage.= ',';
+					}
+					$errorMessage.= $socialResponse['exception'];
 				}
 			}
 		}
+		$response['errorMessage'] = $errorMessage;
 		$response['isException'] = $isException;
 		$response['socialPostId'] = $socialPostId;
 		
