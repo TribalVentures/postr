@@ -62,6 +62,12 @@ class Account extends BaseEntity {
 	 private $accountStatus;
 	 
 	 /**
+	  * @var datetime $lastActionDate
+	  * @ORM\Column(name="lastActionDate", type="datetime")
+	  */	 
+	 private $lastActionDate;
+	 
+	 /**
 	  * @var string btCustomerId
 	  * @ORM\Column(name="btCustomerId", type="string", length=100)
 	  */	 
@@ -273,6 +279,26 @@ class Account extends BaseEntity {
 	  */
 	 public function getAccountStatus() {
 	 	return $this->accountStatus;
+	 }
+	 
+	 /**
+	  * Set lastActionDate
+	  *
+	  * @param datetime lastActionDate
+	  * @return Account
+	  */
+	 public function setLastActionDate($lastActionDate) {
+	 	$this->lastActionDate = $lastActionDate;
+	 	return $this;
+	 }
+	 
+	 /**
+	  * Get lastActionDate
+	  *
+	  * @return datetime lastActionDate
+	  */
+	 public function getLastActionDate() {
+	 	return $this->lastActionDate;
 	 }
 	 
 	 /**

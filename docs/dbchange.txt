@@ -1,3 +1,6 @@
+26 Apr 2017
+ALTER TABLE `account` ADD `lastActionDate` DATETIME NULL AFTER `accountStatus`; 
+
 19 Apr 2017
 update account set btPaymentMethod = 'creditcard' where btCardType != '';
 

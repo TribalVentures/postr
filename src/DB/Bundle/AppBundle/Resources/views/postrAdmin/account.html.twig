@@ -131,6 +131,13 @@
 										{% elseif account.accountStatus == 8 %}
 											<span class="label label-danger">Canceled</span>
 										{% endif %}
+										<div><b><small>
+										{% if account.lastActionDate is not empty %}
+											{{ account.lastActionDate|date('Y-m-d H:i:s') }}
+										{% else %}
+											Time unknown.
+										{% endif %}
+										</small></b></div>
 									</td>
 									<td>{{ account.sid }}</td>
 									<td style="text-align: right; white-space: nowrap;">

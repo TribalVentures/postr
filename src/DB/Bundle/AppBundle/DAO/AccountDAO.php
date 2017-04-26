@@ -61,6 +61,12 @@ class AccountDAO extends BaseDAO {
 			$accountDetail['creationDate'] = new \DateTime($accountDetail['creationDate']);
 		}
 		
+		if(empty($accountDetail['lastActionDate'])) {
+			$accountDetail['lastActionDate'] = new \DateTime();
+		} else {
+			$accountDetail['lastActionDate'] = new \DateTime($accountDetail['lastActionDate']);
+		}
+		
 		if(empty($accountDetail['endDate'])) {
 			$date = new \DateTime();
 			$date->add(new \DateInterval('P365D'));
@@ -423,7 +429,7 @@ class AccountDAO extends BaseDAO {
 		$sql = "SELECT account.accountId, account.account, account.businessTypeId, " .
 				"account.creationDate, account.endDate, account.apiKey, account.accountStatus, " .
 				"account.btCustomerId, account.btCardtoken, account.btCreditCardNo, " .
-				"account.btPaymentMethod, account.btPlanId, " .
+				"account.btPaymentMethod, account.btPlanId, account.lastActionDate, " .
 				"account.btExpirationDate, account.btCardType, account.btSubscriptionId, " . 
 				"account_param.discountCode, account_param.sid, " . 
 				"account_frequency.category, account_frequency.frequency, account_frequency.timezone," . 
@@ -525,8 +531,8 @@ class AccountDAO extends BaseDAO {
 		
 		$account = new Account();
 		$account->setAccountId($accountId);
-		
-		$this->update($account, array('accountStatus'=>$status));
+		$lastActionDate = new \DateTime();
+		$this->update($account, array('accountStatus'=>$status,'lastActionDate'=>$lastActionDate));
 		
 		return array();		
 	}
