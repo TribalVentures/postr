@@ -149,8 +149,12 @@ class NotificationCommand extends ContainerAwareCommand {
 							
 							$response = $socialPostDAO->shareTrendingArticle($account['accountId'], $trendingArticleList["LIST"][0]);
 							if(!empty($response['socialPostId'])) {
+								$this->log("[Account Id : " . $account['accountId'] . "] Send Notification \r\n");
 								$this->sendPostNotification($response['socialPostId'], $response['isException']);
-							} 
+							}
+							if($response['isException']){
+								$this->log("[Account Id : " . $account['accountId'] . "] Error occurred: " . $response['errorMessage'] . " \r\n");
+							}
 						} else {
 							$this->log("[Account Id : " . $account['accountId'] . "] No any article found \r\n");
 						}
