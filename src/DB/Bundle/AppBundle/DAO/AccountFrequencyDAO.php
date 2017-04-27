@@ -254,36 +254,40 @@ class AccountFrequencyDAO extends BaseDAO {
 		
 		$frequencyList = DBUtil::strToArray($frequency);
 		
-		if(isset($frequencyList[0])) {
+		if(isset($frequencyList[0]) && $frequencyList[0] == '1') {
 			$frequencyString.= 'Su ';
 		}
 		
-		if(isset($frequencyList[1])) {
+		if(isset($frequencyList[1]) && $frequencyList[1] == '1') {
 			$frequencyString.= 'M ';
 		}
 		
-		if(isset($frequencyList[2])) {
+		if(isset($frequencyList[2]) && $frequencyList[2] == '1') {
 			$frequencyString.= 'Tu ';
 		}
 		
-		if(isset($frequencyList[3])) {
+		if(isset($frequencyList[3]) && $frequencyList[3] == '1') {
 			$frequencyString.= 'W ';
 		}
 		
-		if(isset($frequencyList[4])) {
+		if(isset($frequencyList[4]) && $frequencyList[4] == '1') {
 			$frequencyString.= 'Th ';
 		}
 		
-		if(isset($frequencyList[5])) {
+		if(isset($frequencyList[5]) && $frequencyList[5] == '1') {
 			$frequencyString.= 'F ';
 		}
 		
-		if(isset($frequencyList[6])) {
+		if(isset($frequencyList[6]) && $frequencyList[6] == '1') {
 			$frequencyString.= 'Sa ';
 		}
 		
 		// Trim and add commas
 		$frequencyString = str_replace(' ', ',', trim($frequencyString));
+		
+		if($frequencyString == ''){
+			$frequencyString = 'No Days';
+		}
 		
 		return $frequencyString;
 	}
