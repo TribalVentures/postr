@@ -100,10 +100,12 @@
 									</td>
 									<td>
 										{% if account.category is not empty %}
-											{{ account.category }} -
-										{% endif %}
-										{% if account.frequency_string is not empty %}
-											{{ account.frequency_string }}
+											{{ account.category }}
+											
+											{% if account.frequency_string is not empty and account.category == 'Autopilot' %}
+												- {{ account.frequency_string }}
+											{% endif %}
+											
 										{% endif %}
 									</td>
 									<td>
