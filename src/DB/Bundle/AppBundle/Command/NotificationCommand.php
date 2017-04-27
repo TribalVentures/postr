@@ -229,8 +229,13 @@ class NotificationCommand extends ContainerAwareCommand {
 				$this->addInResponse('twitterUrl', $url);
 			}
 			
+			// Set default subject line. 
+			$subjectLine = 'InteriorPostr: Your Post has been Shared';
+			
 			$this->addInResponse('postDetail', $postDetail);
 			if($isException == true) {
+				// Set errors into email response and subject line. 
+				$subjectLine = 'InteriorPostr: There was an error sharing your post';
 				$this->addInResponse('isException', $isException);
 			}
 			$html = $this->renderView('DBAppBundle:email:post-notification-email.html.twig', $this->getResponse());
@@ -242,7 +247,7 @@ class NotificationCommand extends ContainerAwareCommand {
 				
 			$emailDetail['to'] = $userDetail['email'];
 			$emailDetail['bcc'] = array(Config::getSParameter('BCC_EMAIL'));
-			$emailDetail['subject'] = 'InteriorPostr: Your Post has been Shared';
+			$emailDetail['subject'] = $subjectLine;
 			
 			$emailDetail['body'] = $html;
 			
