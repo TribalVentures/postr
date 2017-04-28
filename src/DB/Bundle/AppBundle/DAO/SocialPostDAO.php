@@ -462,24 +462,20 @@ class SocialPostDAO extends BaseDAO {
 		}
 		
 		if(!empty($socialPostDetail['message']) || !empty($socialPostDetail['link'])) {
-			$existingSocialPostDetail = $this->findSingleDetailBy(new SocialPost(), array("message"=>$socialPostDetail['message'], "link"=>$socialPostDetail['link']));
-			
-			if(empty($existingSocialPostDetail)) {
-				$socialPostDetail = $this->addSocialPost($socialPostDetail);
-				if(!empty($socialPostDetail['socialPostId'])) {
-					$socialPostId = $socialPostDetail['socialPostId'];
-				}
-				
-				//Add article in article notification history
-				$articleNotifyHistoryDAO = new ArticleNotifyHistoryDAO($this->getDoctrine());
-				
-				$articleNotifyHistoryDetail = array();
-				$articleNotifyHistoryDetail['accountId'] = $accountId;
-				$articleNotifyHistoryDetail['trendingArticleId'] = $socialPostDetail['trendingArticleId'];
-				$articleNotifyHistoryDetail['notifyType'] = ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST;
-				
-				$articleNotifyHistoryDAO->addArticleNotifyHistory($articleNotifyHistoryDetail);
+			$socialPostDetail = $this->addSocialPost($socialPostDetail);
+			if(!empty($socialPostDetail['socialPostId'])) {
+				$socialPostId = $socialPostDetail['socialPostId'];
 			}
+			
+			//Add article in article notification history
+			$articleNotifyHistoryDAO = new ArticleNotifyHistoryDAO($this->getDoctrine());
+			
+			$articleNotifyHistoryDetail = array();
+			$articleNotifyHistoryDetail['accountId'] = $accountId;
+			$articleNotifyHistoryDetail['trendingArticleId'] = $socialPostDetail['trendingArticleId'];
+			$articleNotifyHistoryDetail['notifyType'] = ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST;
+			
+			$articleNotifyHistoryDAO->addArticleNotifyHistory($articleNotifyHistoryDetail);
 		}
 		
 		
