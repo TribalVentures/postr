@@ -476,22 +476,25 @@ class SocialPostDAO extends BaseDAO {
 			$articleNotifyHistoryDetail['notifyType'] = ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST;
 			
 			$articleNotifyHistoryDAO->addArticleNotifyHistory($articleNotifyHistoryDetail);
-		}
-		
-		
-		$socialPostresponse = $this->postSocialmessage($accountId);
-		
-		if(!empty($socialPostresponse)) {
-			foreach($socialPostresponse as $socialResponse) {
-				if(!empty($socialResponse['exception'])) {
-					$isException = true;
-					if($errorMessage != ''){
-						$errorMessage.= ',';
+			
+			$socialPostresponse = $this->postSocialmessage($accountId);
+			
+			if(!empty($socialPostresponse)) {
+				foreach($socialPostresponse as $socialResponse) {
+					if(!empty($socialResponse['exception'])) {
+						$isException = true;
+						if($errorMessage != ''){
+							$errorMessage.= ',';
+						}
+						$errorMessage.= $socialResponse['exception'];
 					}
-					$errorMessage.= $socialResponse['exception'];
 				}
 			}
+		}else{
+			$isException = true;
+			$errorMessage = 'Trending article ('.$articleDetail['trendingArticleId'].') has no caption or url, can not post.';
 		}
+
 		$response['errorMessage'] = $errorMessage;
 		$response['isException'] = $isException;
 		$response['socialPostId'] = $socialPostId;
