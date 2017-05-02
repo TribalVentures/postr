@@ -462,40 +462,39 @@ class SocialPostDAO extends BaseDAO {
 		}
 		
 		if(!empty($socialPostDetail['message']) || !empty($socialPostDetail['link'])) {
-			$existingSocialPostDetail = $this->findSingleDetailBy(new SocialPost(), array("message"=>$socialPostDetail['message'], "link"=>$socialPostDetail['link']));
+			$socialPostDetail = $this->addSocialPost($socialPostDetail);
+			if(!empty($socialPostDetail['socialPostId'])) {
+				$socialPostId = $socialPostDetail['socialPostId'];
+			}
 			
-			if(empty($existingSocialPostDetail)) {
-				$socialPostDetail = $this->addSocialPost($socialPostDetail);
-				if(!empty($socialPostDetail['socialPostId'])) {
-					$socialPostId = $socialPostDetail['socialPostId'];
-				}
-				
-				//Add article in article notification history
-				$articleNotifyHistoryDAO = new ArticleNotifyHistoryDAO($this->getDoctrine());
-				
-				$articleNotifyHistoryDetail = array();
-				$articleNotifyHistoryDetail['accountId'] = $accountId;
-				$articleNotifyHistoryDetail['trendingArticleId'] = $socialPostDetail['trendingArticleId'];
-				$articleNotifyHistoryDetail['notifyType'] = ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST;
-				
-				$articleNotifyHistoryDAO->addArticleNotifyHistory($articleNotifyHistoryDetail);
-			}
-		}
-		
-		
-		$socialPostresponse = $this->postSocialmessage($accountId);
-		
-		if(!empty($socialPostresponse)) {
-			foreach($socialPostresponse as $socialResponse) {
-				if(!empty($socialResponse['exception'])) {
-					$isException = true;
-					if($errorMessage != ''){
-						$errorMessage.= ',';
+			//Add article in article notification history
+			$articleNotifyHistoryDAO = new ArticleNotifyHistoryDAO($this->getDoctrine());
+			
+			$articleNotifyHistoryDetail = array();
+			$articleNotifyHistoryDetail['accountId'] = $accountId;
+			$articleNotifyHistoryDetail['trendingArticleId'] = $socialPostDetail['trendingArticleId'];
+			$articleNotifyHistoryDetail['notifyType'] = ArticleNotifyHistory::NOTIFY_TYPE_AUTOPOST;
+			
+			$articleNotifyHistoryDAO->addArticleNotifyHistory($articleNotifyHistoryDetail);
+			
+			$socialPostresponse = $this->postSocialmessage($accountId);
+			
+			if(!empty($socialPostresponse)) {
+				foreach($socialPostresponse as $socialResponse) {
+					if(!empty($socialResponse['exception'])) {
+						$isException = true;
+						if($errorMessage != ''){
+							$errorMessage.= ',';
+						}
+						$errorMessage.= $socialResponse['exception'];
 					}
-					$errorMessage.= $socialResponse['exception'];
 				}
 			}
+		}else{
+			$isException = true;
+			$errorMessage = 'Trending article ('.$articleDetail['trendingArticleId'].') has no caption or url, can not post.';
 		}
+
 		$response['errorMessage'] = $errorMessage;
 		$response['isException'] = $isException;
 		$response['socialPostId'] = $socialPostId;
